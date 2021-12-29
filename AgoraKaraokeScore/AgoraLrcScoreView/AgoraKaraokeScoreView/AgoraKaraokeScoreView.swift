@@ -88,7 +88,6 @@ class AgoraKaraokeScoreView: UIView {
     private var status: AgoraKaraokeScoreStatus = .`init`
     private var pointX: CGFloat = 0
     private var verticalLineLeadingCons: NSLayoutConstraint?
-    private var verticalLineHeightCons: NSLayoutConstraint?
     private var cursorTopCons: NSLayoutConstraint?
     private var currentTime: TimeInterval = 0
     private var isDrawingCell: Bool = false
@@ -253,8 +252,7 @@ class AgoraKaraokeScoreView: UIView {
         verticalLineLeadingCons = separatorVerticalLine.leadingAnchor.constraint(equalTo: leadingAnchor, constant: scoreConfig.innerMargin)
         verticalLineLeadingCons?.isActive = true
         separatorVerticalLine.bottomAnchor.constraint(equalTo: bottomAnchor).isActive = true
-        verticalLineHeightCons = separatorVerticalLine.heightAnchor.constraint(equalToConstant: scoreConfig.scoreViewHeight)
-        verticalLineHeightCons?.isActive = true
+        separatorVerticalLine.topAnchor.constraint(equalTo: topAnchor).isActive = true
         separatorVerticalLine.widthAnchor.constraint(equalToConstant: 1).isActive = true
 
         separatorTopLine.leadingAnchor.constraint(equalTo: leadingAnchor).isActive = true
@@ -283,11 +281,11 @@ class AgoraKaraokeScoreView: UIView {
         separatorVerticalLine.backgroundColor = scoreConfig.separatorLineColor
         separatorTopLine.isHidden = scoreConfig.isHiddenSeparatorLine
         separatorBottomLine.isHidden = scoreConfig.isHiddenSeparatorLine
-        separatorVerticalLine.isHidden = scoreConfig.isHiddenSeparatorLine
-        verticalLineHeightCons?.constant = scoreConfig.scoreViewHeight
-        verticalLineHeightCons?.isActive = true
+        separatorVerticalLine.isHidden = scoreConfig.isHiddenVerticalSeparatorLine
         verticalLineLeadingCons?.constant = scoreConfig.innerMargin
         verticalLineLeadingCons?.isActive = true
+        cursorTopCons?.constant = scoreConfig.scoreViewHeight - scoreConfig.cursorHeight
+        cursorTopCons?.isActive = true
     }
 }
 

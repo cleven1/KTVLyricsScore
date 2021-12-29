@@ -39,14 +39,17 @@ class AgoraLrcView: UIView {
     }
 
     /// 当前歌词所在的位置
-    private var preRow: Int = 0
+    private var preRow: Int = -1
     private var scrollRow: Int = -1 {
         didSet {
             if scrollRow == oldValue { return }
-            if preRow > 0 {
+            if preRow > -1 {
                 tableView.reloadRows(at: [IndexPath(row: preRow, section: 0)], with: .none)
             }
-            tableView.scrollToRow(at: IndexPath(row: scrollRow, section: 0), at: .middle, animated: true)
+            let indexPath = IndexPath(row: scrollRow, section: 0)
+            tableView.scrollToRow(at: indexPath, at: .middle, animated: true)
+            let cell = tableView.cellForRow(at: indexPath) as? AgoraMusicLrcCell
+            cell?.setupCurrentLrcScale()
             preRow = scrollRow
         }
     }
@@ -82,7 +85,7 @@ class AgoraLrcView: UIView {
 
     private var isDragging: Bool = false {
         didSet {
-            lineView.isHidden = !isDragging
+            lineView.isHidden = lrcConfig.isHiddenSeparator || !isDragging
         }
     }
 
@@ -153,7 +156,6 @@ class AgoraLrcView: UIView {
         if let lrc = getLrc() {
             scrollRow = lrc.index ?? 0
             progress = lrc.progress ?? 0
-//            print("progress == \(progress)")
             currentPlayerLrc?(lrc.lrcText ?? "", progress)
         }
     }
@@ -185,7 +187,7 @@ class AgoraLrcView: UIView {
                currentTime < nextStartTime
             {
                 i = index
-                progress = (currentTime - currentLrc.startTime()) / (nextStartTime - currentLrc.startTime())
+                progress = currentLrc.getProgress(with: currentTime)
                 return (i, currentLrc.toSentence(), progress)
             }
         }
@@ -203,6 +205,9 @@ extension AgoraLrcView: UITableViewDataSource, UITableViewDelegate {
         cell.lrcConfig = lrcConfig
         let lrcModel = dataArray?[indexPath.row]
         cell.setupMusicLrc(with: lrcModel, progress: 0)
+        if indexPath.row == 0 && preRow < 0 {
+            cell.setupCurrentLrcScale()
+        }
         return cell
     }
 

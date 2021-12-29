@@ -9,7 +9,12 @@ import UIKit
 import AVFoundation
 
 class ViewController: UIViewController {
-    private lazy var lrcScoreView = AgoraLrcScoreView(delegate: self)
+    private lazy var lrcScoreView: AgoraLrcScoreView = {
+        let lrcScoreView = AgoraLrcScoreView(delegate: self)
+        lrcScoreView.config.scoreConfig.scoreViewHeight = 100
+        lrcScoreView.config.scoreConfig.emitterColors = [.systemPink]
+        return lrcScoreView
+    }()
     
     private lazy var resetButton: UIButton = {
         let button = UIButton()
@@ -64,13 +69,14 @@ class ViewController: UIViewController {
     private func createData() {
         // 下载歌词
         lrcScoreView.setLrcUrl(url: "https://webdemo.agora.io/ktv/005.xml")
+//        lrcScoreView.setLrcUrl(url: "https://accktv.sd-rtn.com/202112301031/ac49974af7a4a5aae49ada78e691b0d2/release/lyric/zip_utf8/1/db4d162c37d64b189167362a156b7e0d.zip")
 //        lrcScoreView.setLrcUrl(url: "https://accktv.sd-rtn.com/202112211435/bb7a8d52d3c4aaf40187aa1dbed49ee7/release/lyric/zip_utf8/1/71e2988a08dc4412b8573fbc47f5ffc3.zip")
     }
     
     private var audioPlayer: AVAudioPlayer?
     private func setupPlayer() {
         let urlString = "https://accktv.sd-rtn.com/202112241044/ecc006b6c22bc65e6822ad00b2a2477f/release/1/da/mp3/17/ChmFDlpzSkmAAk30ACELt8Ha8aA517.mp3"
-//        let urlString = "https://accktv.sd-rtn.com/202112211435/5d49887eba3377f0d4f7f5e033c3baad/release/1/da/mp3/42/ChmFGlpzSJaAAl0QAB4Ckg8mpNo342.mp3"
+//        let urlString = "https://accktv.sd-rtn.com/202112301031/1c6bd64e40b04e7b90879c97799a6b39/release/mp3/1/7ae068/ChmFHFp91NqAO7RdACsP3Jpvwbc325.mp3"
         // 下载Mp3
         AgoraDownLoadManager.manager.downloadMP3(urlString: urlString) { path in
             let url = URL(fileURLWithPath: path ?? "")

@@ -8,36 +8,6 @@
 import UIKit
 
 class AgoraEmitterView: UIView {
-    private lazy var emitterCell: CAEmitterCell = {
-        // 4.创建粒子, 并且设置例子相关的属性
-        let cell = CAEmitterCell()
-        // 4.2.设置粒子速度
-        cell.velocity = 100
-        cell.velocityRange = 10
-        // 4.3.设置例子的大小
-        cell.scale = 0.6
-        cell.scaleRange = 0.3
-        // 4.4.设置粒子方向
-        cell.emissionLongitude = CGFloat.pi * 3
-        cell.emissionRange = CGFloat.pi / 6
-        // 4.5.设置例子的存活时间
-        cell.lifetime = 0.3
-        cell.lifetimeRange = 1.5
-        // 4.6.设置粒子旋转
-        cell.spin = CGFloat.pi / 2
-        cell.spinRange = CGFloat.pi / 4
-        // 4.6.设置例子每秒弹出的个数
-        cell.birthRate = 1
-
-        cell.alphaSpeed = 0.4
-        // 4.7.设置粒子展示的图片
-//        cell.contents = UIImage()?.cgImage
-        // 设置发射器的位置
-        cell.birthRate = 20
-        cell.velocity = 100
-        return cell
-    }()
-
     private lazy var emitter: CAEmitterLayer = {
         // 1.创建发射器
         let emitter = CAEmitterLayer()
@@ -63,9 +33,43 @@ class AgoraEmitterView: UIView {
 
     private func setupUI() {
         // 5.将粒子设置到发射器中
-        emitter.emitterCells = [emitterCell]
+        emitter.emitterCells = [createEmitterCell(name: "1"),
+                                createEmitterCell(name: "2"),
+                                createEmitterCell(name: "3"),
+                                createEmitterCell(name: "4")]
         // 6.将发射器的layer添加到父layer中
 //        layer.addSublayer(emitter)
+    }
+    
+    private func createEmitterCell(name: String) -> CAEmitterCell {
+        // 4.创建粒子, 并且设置例子相关的属性
+        let cell = CAEmitterCell()
+        // 4.2.设置粒子速度
+        cell.velocity = 100
+        cell.velocityRange = 10
+        // 4.3.设置例子的大小
+        cell.scale = 0.6
+        cell.scaleRange = 0.3
+        // 4.4.设置粒子方向
+        cell.emissionLongitude = CGFloat.pi * 3
+        cell.emissionRange = CGFloat.pi / 6
+        // 4.5.设置例子的存活时间
+        cell.lifetime = 0.3
+        cell.lifetimeRange = 1.5
+        // 4.6.设置粒子旋转
+        cell.spin = CGFloat.pi / 2
+        cell.spinRange = CGFloat.pi / 4
+        // 4.6.设置例子每秒弹出的个数
+        cell.birthRate = 0.001
+
+        cell.alphaSpeed = 0.4
+        // 4.7.设置粒子展示的图片
+//        cell.contents = UIImage()?.cgImage
+        // 设置发射器的位置
+        cell.birthRate = 20
+        cell.velocity = 100
+        cell.name = name
+        return cell
     }
 
     func setupEmitterPoint(point: CGPoint) {
@@ -75,12 +79,17 @@ class AgoraEmitterView: UIView {
     func startEmittering() {
         emitter.isHidden = false
         layer.addSublayer(emitter)
-        if config?.emitterImage == nil {
-            let image = UIImage(color: config?.emitterColor ?? .red,
-                                size: CGSize(width: 10, height: 10))?.toCircle()
-            emitterCell.contents = image?.cgImage
+        if config?.emitterImages == nil {
+            emitter.emitterCells?.forEach({
+                let image = UIImage(color: config?.emitterColors.randomElement() ?? .red,
+                                    size: CGSize(width: 10, height: 10))?.toCircle()
+                $0.contents = image?.cgImage
+            })
         } else {
-            emitterCell.contents = config?.emitterImage
+            emitter.emitterCells?.forEach({
+                let images = config?.emitterImages?.map({ $0.cgImage })
+                $0.contents = images?.randomElement
+            })
         }
     }
 

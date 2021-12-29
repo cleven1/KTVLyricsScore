@@ -15,13 +15,19 @@ public struct AgoraLrcConfigModel {
     /// 提示文字大小
     public var tipsFont: UIFont = .systemFont(ofSize: 17)
     /// 分割线的颜色
-    public var separatorLineColor: UIColor = .lightText
+    public var separatorLineColor: UIColor = .lightGray
+    /// 是否隐藏分割线
+    public var isHiddenSeparator: Bool = false
     /// 默认歌词背景色
     public var lrcNormalColor: UIColor = .gray
     /// 高亮歌词背景色
-    public var lrcHighlightColor: UIColor = .orange
+    public var lrcHighlightColor: UIColor = .white
+    /// 实时绘制的歌词颜色
+    public var lrcDrawingColor: UIColor = .orange
     /// 歌词文字大小 默认: 15
     public var lrcFontSize: UIFont = .systemFont(ofSize: 15)
-    /// 歌词高亮文字大小 默认: 18
-    public var lrcHighlightFontSize: UIFont = .systemFont(ofSize: 15)
+    /// 歌词高亮文字缩放大小 默认: 1.1
+    public var lrcHighlightScaleSize: Double = 1.1
+    /// 歌词左右两边间距
+    public var lrcLeftAndRightMargin: CGFloat = 15
 }

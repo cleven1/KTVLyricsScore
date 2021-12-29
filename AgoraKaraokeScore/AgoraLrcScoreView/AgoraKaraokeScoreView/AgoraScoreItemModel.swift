@@ -52,7 +52,9 @@ public struct AgoraScoreItemConfigModel {
     public var highlightColor: UIColor = .orange
     /// 分割线的颜色
     public var separatorLineColor: UIColor = .systemPink
-    /// 是否隐藏分割线
+    /// 是否隐藏垂直分割线
+    public var isHiddenVerticalSeparatorLine: Bool = false
+    /// 是否隐藏上下分割线
     public var isHiddenSeparatorLine: Bool = false
     /// 游标背景色
     public var cursorColor: UIColor = .systemPink
@@ -63,7 +65,7 @@ public struct AgoraScoreItemConfigModel {
     /// 是否隐藏粒子动画效果
     public var isHiddenEmitterView: Bool = false
     /// 使用图片创建粒子动画
-    public var emitterImage: UIImage?
-    /// emitterImage为空默认使用颜色创建 使用颜色创建粒子动画
-    public var emitterColor: UIColor = .red
+    public var emitterImages: [UIImage]?
+    /// emitterImages为空默认使用颜色创建粒子动画
+    public var emitterColors: [UIColor] = [.red]
 }

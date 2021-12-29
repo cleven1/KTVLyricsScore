@@ -22,7 +22,7 @@ class AgoraMusicLrcCell: UITableViewCell {
     var lrcConfig: AgoraLrcConfigModel? {
         didSet {
             lrcLabel.textColor = lrcConfig?.lrcNormalColor
-            lrcLabel.lrcHighlightColor = lrcConfig?.lrcHighlightColor
+            lrcLabel.lrcDrawingColor = lrcConfig?.lrcDrawingColor
             lrcLabel.font = lrcConfig?.lrcFontSize
         }
     }
@@ -40,14 +40,25 @@ class AgoraMusicLrcCell: UITableViewCell {
 
     func setupMusicLrcProgress(with progress: CGFloat) {
         lrcLabel.progress = progress
-        lrcLabel.font = lrcConfig?.lrcHighlightFontSize
+    }
+    
+    func setupCurrentLrcScale() {
+        lrcLabel.textColor = lrcConfig?.lrcHighlightColor
+        UIView.animate(withDuration: 0.25) {
+            let scale = self.lrcConfig?.lrcHighlightScaleSize ?? 0
+            self.lrcLabel.transform = CGAffineTransform(scaleX: scale, y: scale)
+        }
     }
 
     func setupMusicLrc(with lrcModel: AgoraMiguLrcSentence?,
                        progress: CGFloat) {
         lrcLabel.text = lrcModel?.toSentence()
         lrcLabel.progress = progress
+        lrcLabel.textColor = lrcConfig?.lrcNormalColor
         lrcLabel.font = lrcConfig?.lrcFontSize
+        UIView.animate(withDuration: 0.25) {
+            self.lrcLabel.transform = .identity
+        }
     }
 
     private func setupUI() {
@@ -55,15 +66,19 @@ class AgoraMusicLrcCell: UITableViewCell {
         backgroundColor = .clear
         lrcLabel.translatesAutoresizingMaskIntoConstraints = false
         contentView.addSubview(lrcLabel)
-        lrcLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 15).isActive = true
-        lrcLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -15).isActive = true
+        lrcLabel.centerXAnchor.constraint(equalTo: contentView.centerXAnchor).isActive = true
         lrcLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 10).isActive = true
         lrcLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -10).isActive = true
+    }
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        let margin = lrcConfig?.lrcLeftAndRightMargin ?? 0
+        lrcLabel.preferredMaxLayoutWidth = contentView.frame.width - (margin * 2)
     }
 }
 
 class AgoraLrcLabel: UILabel {
-    var lrcHighlightColor: UIColor?
+    var lrcDrawingColor: UIColor?
     var progress: CGFloat = 0 {
         didSet {
             setNeedsDisplay()
@@ -71,12 +86,50 @@ class AgoraLrcLabel: UILabel {
     }
 
     override func draw(_ rect: CGRect) {
-        super.drawText(in: rect)
-        let fillRext = CGRect(x: 0,
-                              y: 0,
-                              width: bounds.width * progress,
-                              height: bounds.height)
-        lrcHighlightColor?.set()
-        UIRectFillUsingBlendMode(fillRext, .sourceIn)
+        super.draw(rect)
+        if progress <= 0 {
+            return
+        }
+        let lines = Int(bounds.height / font.lineHeight)
+        let padingTop = (bounds.height - CGFloat(lines) * font.lineHeight) / 2
+        let maxWidth = sizeThatFits(CGSize(width: CGFloat(MAXFLOAT),
+                                           height: font.lineHeight * 2)).width
+        let oneLineProgress = maxWidth <= bounds.width ? 1 : bounds.width / maxWidth
+        let path = CGMutablePath()
+        for index in 0 ..< lines {
+            let leftProgress = min(progress, 1) - CGFloat(index) * oneLineProgress
+            let fillRect: CGRect
+            if leftProgress >= oneLineProgress {
+                fillRect = CGRect(x: 0,
+                                  y: padingTop + CGFloat(index) * font.lineHeight,
+                                  width: bounds.width,
+                                  height: font.lineHeight)
+                path.addRect(fillRect)
+            } else if leftProgress > 0 {
+                if (index != lines - 1) || (maxWidth <= bounds.width) {
+                    fillRect = CGRect(x: 0,
+                                      y: padingTop + CGFloat(index) * font.lineHeight,
+                                      width: maxWidth * leftProgress,
+                                      height: font.lineHeight)
+                } else {
+                    let width = maxWidth.truncatingRemainder(dividingBy: bounds.width)
+                    let dw = (bounds.width - width) / 2 + maxWidth * leftProgress
+                    fillRect = CGRect(x: 0,
+                                      y: padingTop + CGFloat(index) * font.lineHeight,
+                                      width: dw,
+                                      height: font.lineHeight)
+                }
+                path.addRect(fillRect)
+                break
+            }
+        }
+        if let context = UIGraphicsGetCurrentContext(), !path.isEmpty {
+            context.addPath(path)
+            context.clip()
+            let _textColor = textColor
+            textColor = lrcDrawingColor
+            super.draw(rect)
+            textColor = _textColor
+        }
     }
 }
