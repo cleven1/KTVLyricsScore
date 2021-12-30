@@ -139,6 +139,7 @@ class AgoraKaraokeScoreView: UIView {
               model.isEmptyCell == false
         else {
             isDrawingCell = false
+            updateDraw(with: .new_layer)
             return
         }
         let maxY = cursorView.center.y
@@ -218,8 +219,7 @@ class AgoraKaraokeScoreView: UIView {
     }
 
     private func insertMiddelLrcData(startTime: Double,
-                                     endTime: Double) -> AgoraScoreItemModel
-    {
+                                     endTime: Double) -> AgoraScoreItemModel {
         // 中间间隔部分
         var model = AgoraScoreItemModel()
         let time = startTime - endTime
