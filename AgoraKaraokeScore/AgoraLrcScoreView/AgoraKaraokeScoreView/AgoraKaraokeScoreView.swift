@@ -117,8 +117,9 @@ class AgoraKaraokeScoreView: UIView {
 
     public func setVoicePitch(_ voicePitch: [Double]) {
         voicePitch.forEach {
-            var y = pitchToY(pitch: $0,
-                             height: scoreConfig.cursorHeight)
+//            var y = pitchToY(pitch: $0,
+//                             height: scoreConfig.cursorHeight)
+            var y = pitchToY(min: 0, max: 100, $0)
             if y == -.infinity {
                 y = scoreConfig.scoreViewHeight - scoreConfig.cursorHeight
             } else {
@@ -166,9 +167,13 @@ class AgoraKaraokeScoreView: UIView {
         }
     }
 
-    private func pitchToY(pitch: CGFloat, height: CGFloat) -> CGFloat {
-        let viewH = frame.height - height
-        return viewH - (viewH / pitch * viewH)
+//    private func pitchToY(pitch: CGFloat, height: CGFloat) -> CGFloat {
+//        let viewH = frame.height - height
+//        return viewH - (viewH / pitch * viewH)
+//    }
+    private func pitchToY(min: CGFloat, max: CGFloat, _ value: CGFloat) -> CGFloat {
+        let viewH = frame.height - scoreConfig.lineHeight
+        return viewH - (viewH / (max - min) * (value - min))
     }
 
     private func calcuToWidth(time: TimeInterval) -> CGFloat {
@@ -186,8 +191,6 @@ class AgoraKaraokeScoreView: UIView {
         for i in 0 ..< tones.count {
             let tone = tones[i]
             var model = AgoraScoreItemModel()
-            model.topKM = pitchToY(pitch: CGFloat(tone.pitch),
-                                   height: scoreConfig.lineHeight)
             let startTime = tone.begin / 1000
             let endTime = tone.end / 1000
             model.leftKM = dataArray.map { $0.widthKM }.reduce(0, +)
@@ -200,7 +203,10 @@ class AgoraKaraokeScoreView: UIView {
                 model.endTime = endTime
                 model.widthKM = calcuToWidth(time: endTime - startTime)
                 model.leftKM = dataArray.map { $0.widthKM }.reduce(0, +)
+                model.pitchMin = CGFloat(tones.sorted(by: { $0.pitch < $1.pitch }).first?.pitch ?? 0) + 50
+                model.pitchMax = CGFloat(tones.sorted(by: { $0.pitch > $1.pitch }).first?.pitch ?? 0) - 50
             }
+            model.topKM = pitchToY(min: model.pitchMin, max: model.pitchMax, CGFloat(tone.pitch))
             preEndTime = endTime
             dataArray.append(model)
         }

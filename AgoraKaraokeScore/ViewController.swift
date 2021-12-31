@@ -35,6 +35,7 @@ class ViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        view.backgroundColor = .black
 //        let imageView = UIImageView(image: UIImage(named: "bgImage"))
 //        imageView.contentMode = .scaleAspectFill
 //        lrcScoreView.config.backgroundImageView = imageView
@@ -75,15 +76,20 @@ class ViewController: UIViewController {
     
     private var audioPlayer: AVAudioPlayer?
     private func setupPlayer() {
-        let urlString = "https://accktv.sd-rtn.com/202112241044/ecc006b6c22bc65e6822ad00b2a2477f/release/1/da/mp3/17/ChmFDlpzSkmAAk30ACELt8Ha8aA517.mp3"
+//        let urlString = "https://accktv.sd-rtn.com/202112241044/ecc006b6c22bc65e6822ad00b2a2477f/release/1/da/mp3/17/ChmFDlpzSkmAAk30ACELt8Ha8aA517.mp3"
 //        let urlString = "https://accktv.sd-rtn.com/202112301031/1c6bd64e40b04e7b90879c97799a6b39/release/mp3/1/7ae068/ChmFHFp91NqAO7RdACsP3Jpvwbc325.mp3"
         // 下载Mp3
-        AgoraDownLoadManager.manager.downloadMP3(urlString: urlString) { path in
-            let url = URL(fileURLWithPath: path ?? "")
-            self.audioPlayer = try? AVAudioPlayer(contentsOf: url)
-            self.audioPlayer?.rate = 1.0
-            self.audioPlayer?.prepareToPlay()
-        }
+//        AgoraDownLoadManager.manager.downloadMP3(urlString: urlString) { path in
+//            let url = URL(fileURLWithPath: path ?? "")
+//            self.audioPlayer = try? AVAudioPlayer(contentsOf: url)
+//            self.audioPlayer?.rate = 1.0
+//            self.audioPlayer?.prepareToPlay()
+//        }
+        let path = Bundle.main.path(forResource: "music", ofType: ".mp3")
+        let url = URL(fileURLWithPath: path ?? "")
+        audioPlayer = try? AVAudioPlayer(contentsOf: url)
+        audioPlayer?.rate = 1.0
+        audioPlayer?.prepareToPlay()
     }
     
     
