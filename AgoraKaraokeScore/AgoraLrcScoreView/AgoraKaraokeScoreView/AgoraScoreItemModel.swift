@@ -70,4 +70,6 @@ public struct AgoraScoreItemConfigModel {
     public var emitterImages: [UIImage]?
     /// emitterImages为空默认使用颜色创建粒子动画
     public var emitterColors: [UIColor] = [.red]
+    /// 评分默认分数: 50
+    public var defaultScore: Double = 50
 }

@@ -53,7 +53,7 @@ protocol AgoraLrcDownloadDelegate {
 public
 protocol AgoraKaraokeScoreDelegate {
     /// 分数实时回调
-    @objc optional func AgoraKaraokeScore(score: Double)
+    @objc optional func agoraKaraokeScore(score: Double, totalScore: Double)
 }
 
 public class AgoraLrcScoreView: UIView {

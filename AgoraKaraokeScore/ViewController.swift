@@ -142,7 +142,7 @@ extension ViewController: AgoraLrcDownloadDelegate {
 }
 
 extension ViewController: AgoraKaraokeScoreDelegate {
-    func AgoraKaraokeScore(score: Double) {
-        scoreLabel.text = "分数: \(Int(score))"
+    func agoraKaraokeScore(score: Double, totalScore: Double) {
+        scoreLabel.text = "分数: \(score) 总分: \(Int(totalScore))"
     }
 }

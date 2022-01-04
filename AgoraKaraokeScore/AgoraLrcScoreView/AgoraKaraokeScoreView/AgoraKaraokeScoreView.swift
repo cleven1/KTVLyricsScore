@@ -28,10 +28,10 @@ class AgoraKaraokeScoreView: UIView {
     }
 
     // MARK: 私有
-
     private var dataArray: [AgoraScoreItemModel]? {
         didSet {
             collectionView.reloadData()
+            totalScore = Double(dataArray?.filter({ $0.isEmptyCell == false }).count ?? 0)
         }
     }
 
@@ -91,6 +91,8 @@ class AgoraKaraokeScoreView: UIView {
     private var cursorTopCons: NSLayoutConstraint?
     private var currentTime: TimeInterval = 0
     private var isDrawingCell: Bool = false
+    private var totalScore: Double = 0
+    private var currentScore: Double = 50
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -100,6 +102,11 @@ class AgoraKaraokeScoreView: UIView {
     @available(*, unavailable)
     required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    func reset() {
+        currentScore = scoreConfig.defaultScore
+        currentTime = 0
     }
 
     func start(currentTime: TimeInterval, totalTime: TimeInterval) {
@@ -126,33 +133,42 @@ class AgoraKaraokeScoreView: UIView {
                 y = y < 0 ? 0 : y > h ? h : y
             }
             cursorTopCons?.constant = y
+            cursorTopCons?.isActive = true
+            calcuSongScore(pitch: $0, y: y + scoreConfig.cursorHeight * 0.5)
             UIView.animate(withDuration: 0.2) {
-                self.cursorTopCons?.isActive = true
                 self.layoutIfNeeded()
             }
-            calcuSongScore(pitch: $0)
         }
     }
-    private func calcuSongScore(pitch: Double) {
+    private func calcuSongScore(pitch: Double, y: CGFloat) {
         guard let model = dataArray?.first(where: { currentTime >= $0.startTime && $0.endTime >= currentTime }), model.isEmptyCell == false
         else {
             isDrawingCell = false
             updateDraw(with: .new_layer)
             return
         }
-        let maxY = cursorView.center.y
         // 计算线的中心位置
         let lineCenterY = (model.topKM + scoreConfig.lineHeight) - scoreConfig.lineHeight * 0.5
-        var score = 100 - abs(maxY - lineCenterY)
+        var score = 100 - abs(y - lineCenterY)
         score = score > 100 ? 100 : score < 0 ? 0 : score
-        if score >= 90, pitch > 0 {
+        if score >= 95, pitch > 0 {
             isDrawingCell = true
             updateDraw(with: .drawing)
+            currentScore += 2
+        } else if score >= 90, pitch > 0 {
+            isDrawingCell = true
+            updateDraw(with: .drawing)
+            currentScore += 1
+        } else if score >= 80, pitch > 0 {
+            isDrawingCell = false
+            updateDraw(with: .new_layer)
+            currentScore += 0.8
         } else {
             isDrawingCell = false
             updateDraw(with: .new_layer)
         }
-        delegate?.AgoraKaraokeScore?(score: pitch <= 0 ? 0 : score)
+        delegate?.agoraKaraokeScore?(score: currentScore > totalScore ? totalScore : currentScore,
+                                     totalScore: totalScore)
     }
 
     private func updateDraw(with status: AgoraKaraokeScoreStatus) {
@@ -285,6 +301,7 @@ class AgoraKaraokeScoreView: UIView {
         verticalLineLeadingCons?.isActive = true
         cursorTopCons?.constant = scoreConfig.scoreViewHeight - scoreConfig.cursorHeight
         cursorTopCons?.isActive = true
+        currentScore = scoreConfig.defaultScore
     }
 }
 
