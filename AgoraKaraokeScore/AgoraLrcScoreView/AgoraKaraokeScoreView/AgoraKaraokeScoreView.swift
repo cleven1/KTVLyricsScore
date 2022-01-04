@@ -116,28 +116,25 @@ class AgoraKaraokeScoreView: UIView {
     }
 
     public func setVoicePitch(_ voicePitch: [Double]) {
+        let sortedPitch = voicePitch.sorted()
+        let h = scoreConfig.scoreViewHeight - scoreConfig.cursorHeight
         voicePitch.forEach {
-//            var y = pitchToY(pitch: $0,
-//                             height: scoreConfig.cursorHeight)
-            var y = pitchToY(min: 0, max: 100, $0)
+            var y = pitchToY(min: sortedPitch.first ?? 0, max: sortedPitch.last ?? 0, $0)
             if y == -.infinity {
-                y = scoreConfig.scoreViewHeight - scoreConfig.cursorHeight
+                y = h
             } else {
-                y = y < 0 ? 0 : y > scoreConfig.scoreViewHeight ? scoreConfig.scoreViewHeight : y
+                y = y < 0 ? 0 : y > h ? h : y
             }
-            calcuSongScore(pitch: $0)
             cursorTopCons?.constant = y
             UIView.animate(withDuration: 0.2) {
                 self.cursorTopCons?.isActive = true
                 self.layoutIfNeeded()
             }
+            calcuSongScore(pitch: $0)
         }
     }
-
     private func calcuSongScore(pitch: Double) {
-        guard let indexPath = collectionView.indexPathForItem(at: CGPoint(x: pointX + scoreConfig.innerMargin + scoreConfig.innerMargin * 0.5, y: 0)) else { return }
-        guard let model = dataArray?[indexPath.item],
-              model.isEmptyCell == false
+        guard let model = dataArray?.first(where: { currentTime >= $0.startTime && $0.endTime >= currentTime }), model.isEmptyCell == false
         else {
             isDrawingCell = false
             updateDraw(with: .new_layer)
@@ -167,10 +164,6 @@ class AgoraKaraokeScoreView: UIView {
         }
     }
 
-//    private func pitchToY(pitch: CGFloat, height: CGFloat) -> CGFloat {
-//        let viewH = frame.height - height
-//        return viewH - (viewH / pitch * viewH)
-//    }
     private func pitchToY(min: CGFloat, max: CGFloat, _ value: CGFloat) -> CGFloat {
         let viewH = frame.height - scoreConfig.lineHeight
         return viewH - (viewH / (max - min) * (value - min))
@@ -203,8 +196,8 @@ class AgoraKaraokeScoreView: UIView {
                 model.endTime = endTime
                 model.widthKM = calcuToWidth(time: endTime - startTime)
                 model.leftKM = dataArray.map { $0.widthKM }.reduce(0, +)
-                model.pitchMin = CGFloat(tones.sorted(by: { $0.pitch < $1.pitch }).first?.pitch ?? 0) + 50
-                model.pitchMax = CGFloat(tones.sorted(by: { $0.pitch > $1.pitch }).first?.pitch ?? 0) - 50
+                model.pitchMin = CGFloat(tones.sorted(by: { $0.pitch < $1.pitch }).first?.pitch ?? 0) - 50
+                model.pitchMax = CGFloat(tones.sorted(by: { $0.pitch > $1.pitch }).first?.pitch ?? 0) + 50
             }
             model.topKM = pitchToY(min: model.pitchMin, max: model.pitchMax, CGFloat(tone.pitch))
             preEndTime = endTime
