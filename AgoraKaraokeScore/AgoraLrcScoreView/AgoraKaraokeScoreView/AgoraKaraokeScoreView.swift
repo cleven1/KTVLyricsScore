@@ -127,7 +127,8 @@ class AgoraKaraokeScoreView: UIView {
         let h = scoreConfig.scoreViewHeight - scoreConfig.cursorHeight
         voicePitch.forEach {
             var y = pitchToY(min: sortedPitch.first ?? 0, max: sortedPitch.last ?? 0, $0)
-            if y == -.infinity {
+            y = y.isNaN ? 0 : y
+            if y == -.infinity || $0 == 0 {
                 y = h
             } else {
                 y = y < 0 ? 0 : y > h ? h : y
@@ -182,11 +183,13 @@ class AgoraKaraokeScoreView: UIView {
 
     private func pitchToY(min: CGFloat, max: CGFloat, _ value: CGFloat) -> CGFloat {
         let viewH = frame.height - scoreConfig.lineHeight
-        return viewH - (viewH / (max - min) * (value - min))
+        let y = viewH - (viewH / (max - min) * (value - min))
+        return y.isNaN ? 0 : y
     }
 
     private func calcuToWidth(time: TimeInterval) -> CGFloat {
-        scoreConfig.lineWidht * time
+        let w = scoreConfig.lineWidht * time
+        return w.isNaN ? 0 : w
     }
 
     private func createScoreData(data: [AgoraMiguLrcSentence]?) {
