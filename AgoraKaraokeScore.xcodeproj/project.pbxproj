@@ -29,6 +29,7 @@
 		E78B5D2F276321AF00579270 /* AgoraCacheFileHandle.swift in Sources */ = {isa = PBXBuildFile; fileRef = E78B5D2B276321AF00579270 /* AgoraCacheFileHandle.swift */; };
 		E78B5D32276321DC00579270 /* AgoraStringExtention.swift in Sources */ = {isa = PBXBuildFile; fileRef = E78B5D31276321DC00579270 /* AgoraStringExtention.swift */; };
 		E78B5D342763338200579270 /* AgoraDownLoadManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E78B5D332763338200579270 /* AgoraDownLoadManager.swift */; };
+		E79EB9CB278540F400FE703A /* GCDTimer.swift in Sources */ = {isa = PBXBuildFile; fileRef = E79EB9CA278540F400FE703A /* GCDTimer.swift */; };
 		E7CD1206A1B46CE4668AE106 /* Pods_AgoraKaraokeScore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6CCFB5940A66F99EF23C4C2C /* Pods_AgoraKaraokeScore.framework */; };
 		E7F9493F277EB44F005C57F1 /* music.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = E7F9493E277EB44F005C57F1 /* music.mp3 */; };
 /* End PBXBuildFile section */
@@ -60,6 +61,7 @@
 		E78B5D2B276321AF00579270 /* AgoraCacheFileHandle.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AgoraCacheFileHandle.swift; sourceTree = "<group>"; };
 		E78B5D31276321DC00579270 /* AgoraStringExtention.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AgoraStringExtention.swift; sourceTree = "<group>"; };
 		E78B5D332763338200579270 /* AgoraDownLoadManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AgoraDownLoadManager.swift; sourceTree = "<group>"; };
+		E79EB9CA278540F400FE703A /* GCDTimer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GCDTimer.swift; sourceTree = "<group>"; };
 		E7F9493E277EB44F005C57F1 /* music.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = music.mp3; sourceTree = "<group>"; };
 		F51EAA9C33D7C3AB3BB8D299 /* Pods-AgoraKaraokeScore.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AgoraKaraokeScore.release.xcconfig"; path = "Target Support Files/Pods-AgoraKaraokeScore/Pods-AgoraKaraokeScore.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -96,6 +98,7 @@
 		E7499C1C276B0FB200E799FF /* AgoraLrcScoreView */ = {
 			isa = PBXGroup;
 			children = (
+				E79EB9CA278540F400FE703A /* GCDTimer.swift */,
 				E78B5D162762F35400579270 /* AgoraLrcView */,
 				E78B5D052761D6FC00579270 /* AgoraKaraokeScoreView */,
 				E7499C1D276B0FCF00E799FF /* AgoraLrcScoreView.swift */,
@@ -298,6 +301,7 @@
 				E78B5D2E276321AF00579270 /* AgoraRequestTask.swift in Sources */,
 				E7499C1E276B0FCF00E799FF /* AgoraLrcScoreView.swift in Sources */,
 				E78B5D32276321DC00579270 /* AgoraStringExtention.swift in Sources */,
+				E79EB9CB278540F400FE703A /* GCDTimer.swift in Sources */,
 				E78B5CF22761D6F300579270 /* AppDelegate.swift in Sources */,
 				E78B5D092761D71400579270 /* AgoraScoreItemModel.swift in Sources */,
 				E78B5D25276301D800579270 /* AgoraMusicLrcParse.swift in Sources */,

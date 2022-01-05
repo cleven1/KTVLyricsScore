@@ -31,7 +31,7 @@ class AgoraKaraokeScoreView: UIView {
     private var dataArray: [AgoraScoreItemModel]? {
         didSet {
             collectionView.reloadData()
-            totalScore = Double(dataArray?.filter({ $0.isEmptyCell == false }).count ?? 0)
+            totalScore = Double(dataArray?.filter({ $0.isEmptyCell == false }).count ?? 0) * 2
         }
     }
 
@@ -133,12 +133,7 @@ class AgoraKaraokeScoreView: UIView {
             } else {
                 y = y < 0 ? 0 : y > h ? h : y
             }
-            cursorTopCons?.constant = y
-            cursorTopCons?.isActive = true
             calcuSongScore(pitch: $0, y: y + scoreConfig.cursorHeight * 0.5)
-            UIView.animate(withDuration: 0.2) {
-                self.layoutIfNeeded()
-            }
         }
     }
     private func calcuSongScore(pitch: Double, y: CGFloat) {
@@ -155,23 +150,32 @@ class AgoraKaraokeScoreView: UIView {
         if score >= 95, pitch > 0 {
             isDrawingCell = true
             updateDraw(with: .drawing)
+            cursorAnimation(y: y)
             currentScore += 2
-        } else if score >= 90, pitch > 0 {
+        } else if score >= 85, pitch > 0 {
             isDrawingCell = true
             updateDraw(with: .drawing)
+            cursorAnimation(y: y)
             currentScore += 1
-        } else if score >= 80, pitch > 0 {
-            isDrawingCell = false
-            updateDraw(with: .new_layer)
-            currentScore += 0.8
         } else {
-            isDrawingCell = false
-            updateDraw(with: .new_layer)
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                self.isDrawingCell = false
+                self.updateDraw(with: .new_layer)
+            }
+            cursorAnimation(y: y)
         }
         delegate?.agoraKaraokeScore?(score: currentScore > totalScore ? totalScore : currentScore,
                                      totalScore: totalScore)
     }
 
+    private func cursorAnimation(y: CGFloat) {
+        cursorTopCons?.constant = y - scoreConfig.cursorHeight * 0.5
+        cursorTopCons?.isActive = true
+        UIView.animate(withDuration: 0.2) {
+            self.layoutIfNeeded()
+        }
+    }
+    
     private func updateDraw(with status: AgoraKaraokeScoreStatus) {
         self.status = isDrawingCell ? .drawing : status
         if isDrawingCell {
