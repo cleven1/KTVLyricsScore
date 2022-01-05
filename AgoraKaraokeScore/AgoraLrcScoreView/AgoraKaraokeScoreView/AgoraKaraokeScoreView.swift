@@ -113,10 +113,10 @@ class AgoraKaraokeScoreView: UIView {
         self.currentTime = currentTime
         guard currentTime > 0 else { return }
         emitterView.setupEmitterPoint(point: cursorView.center)
-        let contentWidth = collectionView.contentSize.width - scoreConfig.innerMargin - (frame.width - scoreConfig.innerMargin)
+        let contentWidth = collectionView.contentSize.width
         let rate = currentTime / totalTime
         let space = contentWidth * rate
-        pointX = space + (frame.width - scoreConfig.innerMargin)
+        pointX = space + scoreConfig.innerMargin * 2
         updateDraw(with: .new_layer)
         collectionView.setContentOffset(CGPoint(x: pointX, y: 0),
                                         animated: false)
