@@ -128,7 +128,7 @@ public class AgoraLrcScoreView: UIView {
         }
     }
 
-    private var timer: GCDTimer?
+    private lazy var timer = GCDTimer()
     private var scoreViewHCons: NSLayoutConstraint?
 
     public init(delegate: AgoraLrcViewDelegate) {
@@ -166,8 +166,7 @@ public class AgoraLrcScoreView: UIView {
 
     /// 开始滚动
     public func start() {
-        timer = GCDTimer()
-        timer?.scheduledMillisecondsTimer(withName: "", milliseconds: .infinity, queue: .main, action: { [weak self] _, duration in
+        timer.scheduledMillisecondsTimer(withName: "", milliseconds: .infinity, queue: .main, action: { [weak self] _, duration in
             guard let self = self else { return }
             self.timerHandler()
         })
@@ -179,10 +178,7 @@ public class AgoraLrcScoreView: UIView {
 
     /// 停止
     public func stop() {
-        if timer != nil {
-            timer?.destoryAllTimer()
-            timer = nil
-        }
+        timer.destoryAllTimer()
     }
     
     public func reset() {
