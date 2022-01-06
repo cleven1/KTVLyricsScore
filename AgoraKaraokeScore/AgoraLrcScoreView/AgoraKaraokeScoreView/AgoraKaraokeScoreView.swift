@@ -124,7 +124,7 @@ class AgoraKaraokeScoreView: UIView {
         let contentWidth = collectionView.contentSize.width
         let rate = currentTime / totalTime
         let space = contentWidth * rate
-        pointX = space //+ scoreConfig.innerMargin
+        pointX = space //- scoreConfig.innerMargin
         updateDraw(with: .new_layer)
         collectionView.setContentOffset(CGPoint(x: pointX, y: 0),
                                         animated: false)
@@ -217,20 +217,20 @@ class AgoraKaraokeScoreView: UIView {
             var model = AgoraScoreItemModel()
             let startTime = tone.begin / 1000
             let endTime = tone.end / 1000
-            model.leftKM = dataArray.map { $0.widthKM }.reduce(0, +)
             if preEndTime > 0 && preEndTime != startTime {
-                model = insertMiddelLrcData(startTime: startTime,
+                var model = insertMiddelLrcData(startTime: startTime,
                                             endTime: preEndTime)
                 model.leftKM = dataArray.map { $0.widthKM }.reduce(0, +)
-            } else {
-                model.startTime = startTime
-                model.endTime = endTime
-                model.widthKM = calcuToWidth(time: endTime - startTime)
-                model.leftKM = dataArray.map { $0.widthKM }.reduce(0, +)
-                model.pitchMin = CGFloat(tones.sorted(by: { $0.pitch < $1.pitch }).first?.pitch ?? 0) - 50
-                model.pitchMax = CGFloat(tones.sorted(by: { $0.pitch > $1.pitch }).first?.pitch ?? 0) + 50
+                dataArray.append(model)
             }
+            model.startTime = startTime
+            model.endTime = endTime
+            model.widthKM = calcuToWidth(time: endTime - startTime)
+            model.leftKM = dataArray.map { $0.widthKM }.reduce(0, +)
+            model.pitchMin = CGFloat(tones.sorted(by: { $0.pitch < $1.pitch }).first?.pitch ?? 0) - 50
+            model.pitchMax = CGFloat(tones.sorted(by: { $0.pitch > $1.pitch }).first?.pitch ?? 0) + 50
             model.topKM = pitchToY(min: model.pitchMin, max: model.pitchMax, CGFloat(tone.pitch))
+            
             preEndTime = endTime
             dataArray.append(model)
         }
@@ -241,7 +241,7 @@ class AgoraKaraokeScoreView: UIView {
         guard let firstTone = lrcData.first(where: { $0.pitch > 0 }) else { return nil }
         let endTime = firstTone.begin / 1000
         var model = AgoraScoreItemModel()
-        model.widthKM = calcuToWidth(time: endTime) - scoreConfig.innerMargin
+        model.widthKM = calcuToWidth(time: endTime) + scoreConfig.innerMargin
         model.isEmptyCell = true
         model.startTime = 0
         model.endTime = endTime
