@@ -86,13 +86,13 @@ class AgoraKaraokeScoreView: UIView {
     private lazy var emitterView = AgoraEmitterView()
 
     private var status: AgoraKaraokeScoreStatus = .`init`
-    private var pointX: CGFloat = 0
     private var verticalLineLeadingCons: NSLayoutConstraint?
     private var cursorTopCons: NSLayoutConstraint?
     private var currentTime: TimeInterval = 0
     private var isDrawingCell: Bool = false
     private var totalScore: Double = 0
     private var currentScore: Double = 50
+    private var isInsertEnd: Bool = false
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -109,8 +109,7 @@ class AgoraKaraokeScoreView: UIView {
         currentTime = 0
         isInsertEnd = false
     }
-
-    private var isInsertEnd: Bool = false
+    
     func start(currentTime: TimeInterval, totalTime: TimeInterval) {
         self.currentTime = currentTime
         guard currentTime > 0 else { return }
@@ -121,10 +120,9 @@ class AgoraKaraokeScoreView: UIView {
             return
         }
         emitterView.setupEmitterPoint(point: cursorView.center)
-        let contentWidth = collectionView.contentSize.width
+        let contentWidth = collectionView.contentSize.width - frame.width
         let rate = currentTime / totalTime
-        let space = contentWidth * rate
-        pointX = space //- scoreConfig.innerMargin
+        let pointX = contentWidth * rate
         updateDraw(with: .new_layer)
         collectionView.setContentOffset(CGPoint(x: pointX, y: 0),
                                         animated: false)
@@ -219,7 +217,7 @@ class AgoraKaraokeScoreView: UIView {
             let endTime = tone.end / 1000
             if preEndTime > 0 && preEndTime != startTime {
                 var model = insertMiddelLrcData(startTime: startTime,
-                                            endTime: preEndTime)
+                                                endTime: preEndTime)
                 model.leftKM = dataArray.map { $0.widthKM }.reduce(0, +)
                 dataArray.append(model)
             }
@@ -241,7 +239,7 @@ class AgoraKaraokeScoreView: UIView {
         guard let firstTone = lrcData.first(where: { $0.pitch > 0 }) else { return nil }
         let endTime = firstTone.begin / 1000
         var model = AgoraScoreItemModel()
-        model.widthKM = calcuToWidth(time: endTime) + scoreConfig.innerMargin
+        model.widthKM = calcuToWidth(time: endTime)
         model.isEmptyCell = true
         model.startTime = 0
         model.endTime = endTime
@@ -265,7 +263,7 @@ class AgoraKaraokeScoreView: UIView {
         guard let firstTone = tones.last(where: { $0.pitch > 0 }) else { return nil }
         let endTime = totalTime - (firstTone.end / 1000)
         var model = AgoraScoreItemModel()
-        model.widthKM = calcuToWidth(time: endTime) + (frame.width - scoreConfig.innerMargin)
+        model.widthKM = calcuToWidth(time: endTime)
         model.isEmptyCell = true
         model.startTime = firstTone.end / 1000
         model.endTime = model.startTime + endTime
@@ -359,7 +357,7 @@ extension AgoraKaraokeScoreView: UICollectionViewDataSource, UICollectionViewDel
     }
 
     func collectionView(_: UICollectionView, layout _: UICollectionViewLayout, insetForSectionAt _: Int) -> UIEdgeInsets {
-        UIEdgeInsets(top: 0, left: scoreConfig.innerMargin, bottom: 0, right: 0)
+        UIEdgeInsets(top: 0, left: scoreConfig.innerMargin, bottom: 0, right: (frame.width - scoreConfig.innerMargin))
     }
 
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
