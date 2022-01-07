@@ -83,13 +83,28 @@ class AgoraKaraokeScoreView: UIView {
         return view
     }()
 
-    private lazy var emitterView = AgoraEmitterView()
+    private lazy var animation: CABasicAnimation = {
+        let animation = CABasicAnimation(keyPath: "position.y")
+        animation.duration = 3.0
+        animation.fillMode = .forwards
+        animation.isRemovedOnCompletion = true
+        animation.repeatCount = 1
+        animation.timingFunction = CAMediaTimingFunction(name: .easeInEaseOut)
+        return animation
+    }()
 
+    private lazy var emitterView = AgoraEmitterView()
+    
+    private var animationDuration: TimeInterval = 0.25
     private var status: AgoraKaraokeScoreStatus = .`init`
     private var verticalLineLeadingCons: NSLayoutConstraint?
     private var cursorTopCons: NSLayoutConstraint?
     private var currentTime: TimeInterval = 0
-    private var isDrawingCell: Bool = false
+    private var isDrawingCell: Bool = false {
+        didSet {
+            updateDraw()
+        }
+    }
     private var totalScore: Double = 0
     private var currentScore: Double = 50
     private var isInsertEnd: Bool = false
@@ -123,7 +138,6 @@ class AgoraKaraokeScoreView: UIView {
         let contentWidth = collectionView.contentSize.width - frame.width
         let rate = currentTime / totalTime
         let pointX = contentWidth * rate
-        updateDraw(with: .new_layer)
         collectionView.setContentOffset(CGPoint(x: pointX, y: 0),
                                         animated: false)
     }
@@ -143,10 +157,9 @@ class AgoraKaraokeScoreView: UIView {
         }
     }
     private func calcuSongScore(pitch: Double, y: CGFloat) {
-        guard let model = dataArray?.first(where: { currentTime >= $0.startTime && $0.endTime >= currentTime }), model.isEmptyCell == false
+        guard let model = dataArray?.first(where: { currentTime - animationDuration >= $0.startTime && $0.endTime >= currentTime - animationDuration }), model.isEmptyCell == false
         else {
             isDrawingCell = false
-            updateDraw(with: .new_layer)
             return
         }
         // 计算线的中心位置
@@ -154,36 +167,29 @@ class AgoraKaraokeScoreView: UIView {
         var score = 100 - abs(y - lineCenterY)
         score = score > 100 ? 100 : score < 0 ? 0 : score
         if score >= 95, pitch > 0 {
-            isDrawingCell = true
-            updateDraw(with: .drawing)
-            cursorAnimation(y: y)
+            cursorAnimation(y: y, isDraw: true)
             currentScore += 2
         } else if score >= 85, pitch > 0 {
-            isDrawingCell = true
-            updateDraw(with: .drawing)
-            cursorAnimation(y: y)
+            cursorAnimation(y: y, isDraw: true)
             currentScore += 1
         } else {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-                self.isDrawingCell = false
-                self.updateDraw(with: .new_layer)
-            }
-            cursorAnimation(y: y)
+            cursorAnimation(y: y, isDraw: false)
         }
         delegate?.agoraKaraokeScore?(score: currentScore > totalScore ? totalScore : currentScore,
                                      totalScore: totalScore)
     }
-
-    private func cursorAnimation(y: CGFloat) {
+    
+    private func cursorAnimation(y: CGFloat, isDraw: Bool) {
         cursorTopCons?.constant = y - scoreConfig.cursorHeight * 0.5
         cursorTopCons?.isActive = true
-        UIView.animate(withDuration: 0.2) {
+        UIView.animate(withDuration: animationDuration, delay: 0, options: [.overrideInheritedCurve]) {
+            self.isDrawingCell = isDraw
             self.layoutIfNeeded()
-        }
+        } completion: { _ in }
     }
     
-    private func updateDraw(with status: AgoraKaraokeScoreStatus) {
-        self.status = isDrawingCell ? .drawing : status
+    private func updateDraw() {
+        self.status = isDrawingCell ? .drawing : .new_layer
         if isDrawingCell {
             emitterView.startEmittering()
         } else {
