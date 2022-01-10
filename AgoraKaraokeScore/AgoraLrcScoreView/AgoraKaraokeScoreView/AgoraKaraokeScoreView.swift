@@ -141,25 +141,44 @@ class AgoraKaraokeScoreView: UIView {
         collectionView.setContentOffset(CGPoint(x: pointX, y: 0),
                                         animated: false)
     }
-
+    
+    private var preTime: CFAbsoluteTime = 0
+    private var spliceVoice: [Double] = []
     public func setVoicePitch(_ voicePitch: [Double]) {
-        let sortedPitch = voicePitch.sorted()
-        let h = scoreConfig.scoreViewHeight - scoreConfig.cursorHeight
-        voicePitch.forEach {
-            var y = pitchToY(min: sortedPitch.first ?? 0, max: sortedPitch.last ?? 0, $0)
-            y = y.isNaN ? 0 : y
-            if y == -.infinity || $0 == 0 {
-                y = h
-            } else {
-                y = y < 0 ? 0 : y > h ? h : y
+        let time = CFAbsoluteTimeGetCurrent()
+        if (time - preTime) * 1000 < 200 {
+            spliceVoice.append(voicePitch.first ?? 0)
+        } else {
+            let sorted = spliceVoice.sorted()
+            let h = scoreConfig.scoreViewHeight - scoreConfig.cursorHeight
+            spliceVoice.forEach {
+                var y = pitchToY(min: (sorted.first ?? 0) - 50, max: (sorted.last ?? h) + 50, $0)
+                y = y.isNaN ? 0 : y
+                if y == -.infinity || $0 == 0 {
+                    y = h
+                } else {
+                    y = y < 0 ? 0 : y > h ? h : y
+                }
+                if $0 == 0 {
+                    calcuSongScore(pitch: $0, y: h + scoreConfig.cursorHeight * 0.5)
+                    return
+                }
+                calcuSongScore(pitch: $0, y: y + scoreConfig.cursorHeight * 0.5)
             }
-            calcuSongScore(pitch: $0, y: y + scoreConfig.cursorHeight * 0.5)
+            spliceVoice.removeAll()
+            preTime = time
         }
     }
+    private var preModel: AgoraScoreItemModel?
     private func calcuSongScore(pitch: Double, y: CGFloat) {
-        guard let model = dataArray?.first(where: { currentTime - animationDuration >= $0.startTime && $0.endTime >= currentTime - animationDuration }), model.isEmptyCell == false
+        let time = currentTime * 1000 - 30
+        guard let model = dataArray?.first(where: { time >= $0.startTime * 1000 && $0.endTime * 1000 >= time }),    model.isEmptyCell == false
         else {
             isDrawingCell = false
+            cursorAnimation(y: y, isDraw: false)
+            return
+        }
+        if model.startTime == preModel?.startTime && model.endTime == preModel?.endTime {
             return
         }
         // 计算线的中心位置
@@ -169,9 +188,11 @@ class AgoraKaraokeScoreView: UIView {
         if score >= 95, pitch > 0 {
             cursorAnimation(y: y, isDraw: true)
             currentScore += 2
+            preModel = model
         } else if score >= 85, pitch > 0 {
             cursorAnimation(y: y, isDraw: true)
             currentScore += 1
+            preModel = model
         } else {
             cursorAnimation(y: y, isDraw: false)
         }
@@ -182,10 +203,14 @@ class AgoraKaraokeScoreView: UIView {
     private func cursorAnimation(y: CGFloat, isDraw: Bool) {
         cursorTopCons?.constant = y - scoreConfig.cursorHeight * 0.5
         cursorTopCons?.isActive = true
+        if isDraw {
+            isDrawingCell = true
+        }
         UIView.animate(withDuration: animationDuration, delay: 0, options: [.overrideInheritedCurve]) {
-            self.isDrawingCell = isDraw
             self.layoutIfNeeded()
-        } completion: { _ in }
+        } completion: { _ in
+            self.isDrawingCell = isDraw
+        }
     }
     
     private func updateDraw() {

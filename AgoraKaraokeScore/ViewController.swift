@@ -31,7 +31,7 @@ class ViewController: UIViewController {
         return label
     }()
     
-    private var timer: Timer?
+    private lazy var timer = GCDTimer()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -98,18 +98,15 @@ class ViewController: UIViewController {
 //        audioPlayer?.prepareToPlay()
         audioPlayer?.play()
         lrcScoreView.start()
-        setupTimer()
     }
     
     private func setupTimer() {
-        timer = Timer(timeInterval: 1, repeats: true, block: { _ in
-            let voice = Double.random(in: 100...300)
-            let voice1 = Double.random(in: 80...200)
-            let voice2 = Double.random(in: 100...400)
-            let voice3 = Double.random(in: 55...250)
-            self.lrcScoreView.setVoicePitch([voice, voice1, voice2, voice3])
-        })
-        RunLoop.current.add(timer!, forMode: .common)
+        let voice = Double.random(in: 100...300)
+        let voice1 = Double.random(in: 80...200)
+        let voice2 = Double.random(in: 100...400)
+        let voice3 = Double.random(in: 55...250)
+        let voice4 = Double.random(in: 0...100)
+        self.lrcScoreView.setVoicePitch([voice, voice1, voice2, voice3, voice4])
     }
 }
 
@@ -117,6 +114,7 @@ extension ViewController: AgoraLrcViewDelegate {
     func getPlayerCurrentTime() -> TimeInterval {
         //        print("duration == \(audioPlayer?.currentTime ?? 0)")
         let time = (audioPlayer?.currentTime ?? 0)
+        setupTimer()
         return time
     }
     
