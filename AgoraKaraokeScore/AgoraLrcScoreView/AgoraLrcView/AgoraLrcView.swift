@@ -24,8 +24,14 @@ class AgoraLrcView: UIView {
             dataArray = miguSongModel?.sentences
         }
     }
+    
+    var lrcDatas: [AgoraLrcModel]? {
+        didSet {
+            dataArray = lrcDatas
+        }
+    }
 
-    private var dataArray: [AgoraMiguLrcSentence]? {
+    private var dataArray: [Any]? {
         didSet {
             tableView.reloadData()
         }
@@ -139,10 +145,17 @@ class AgoraLrcView: UIView {
             tableView.separatorStyle = .none
         }
         guard !(dataArray?.isEmpty ?? false) else { return }
-        self.currentTime = currentTime * 1000
+        let time: TimeInterval = lrcDatas == nil ? 1000 : 1
+        self.currentTime = currentTime * time
         updatePerSecond()
     }
 
+    func reset() {
+        currentTime = 0
+        miguSongModel = nil
+        lrcDatas = nil
+    }
+    
     private func updateUI() {
         tipsLabel.text = lrcConfig.tipsString
         tipsLabel.textColor = lrcConfig.tipsColor
@@ -153,7 +166,15 @@ class AgoraLrcView: UIView {
     // MARK: - 更新歌词的时间
 
     private func updatePerSecond() {
-        if let lrc = getLrc() {
+        if lrcDatas != nil {
+            if let lrc = getLrc() {
+                scrollRow = lrc.index ?? 0
+                progress = lrc.progress ?? 0
+                currentPlayerLrc?(lrc.lrcText ?? "", progress)
+            }
+            return
+        }
+        if let lrc = getXmlLrc() {
             scrollRow = lrc.index ?? 0
             progress = lrc.progress ?? 0
             currentPlayerLrc?(lrc.lrcText ?? "", progress)
@@ -161,11 +182,11 @@ class AgoraLrcView: UIView {
     }
 
     // MARK: - 获取播放歌曲的信息
-    private func getLrc() -> (index: Int?,
+    // 获取xml类型的歌词信息
+    private func getXmlLrc() -> (index: Int?,
                               lrcText: String?,
-                              progress: CGFloat?)?
-    {
-        guard let lrcArray = dataArray,
+                              progress: CGFloat?)? {
+        guard let lrcArray = miguSongModel?.sentences,
               !lrcArray.isEmpty else { return nil }
         var i = 0
         var progress: CGFloat = 0.0
@@ -193,6 +214,30 @@ class AgoraLrcView: UIView {
         }
         return nil
     }
+    // 获取lrc格式的歌词信息
+    func getLrc() -> (index: Int?, lrcText: String?, progress: CGFloat?)? {
+        guard let lrcArray = lrcDatas,
+              !lrcArray.isEmpty else { return nil }
+        var i: Int = 0
+        var progress: CGFloat = 0.0
+        for (index, lrc) in lrcArray.enumerated() {
+            let currrentLrc = lrc
+            var nextLrc: AgoraLrcModel?
+            //获取下一句歌词
+            if index == lrcArray.count-1 {
+                nextLrc = lrcArray[index]
+            } else {
+                nextLrc = lrcArray[index+1]
+            }
+            
+            if currentTime >= currrentLrc.time && currentTime < (nextLrc?.time ?? 0) {
+                i = index
+                progress = CGFloat((currentTime - currrentLrc.time) / ((nextLrc?.time ?? 0) - currrentLrc.time))
+                return (i, currrentLrc.lrc, progress)
+            }
+        }
+        return nil
+    }
 }
 
 extension AgoraLrcView: UITableViewDataSource, UITableViewDelegate {
@@ -204,7 +249,11 @@ extension AgoraLrcView: UITableViewDataSource, UITableViewDelegate {
         let cell = tableView.dequeueReusableCell(withIdentifier: "AgoaraLrcViewCell", for: indexPath) as! AgoraMusicLrcCell
         cell.lrcConfig = lrcConfig
         let lrcModel = dataArray?[indexPath.row]
-        cell.setupMusicLrc(with: lrcModel, progress: 0)
+        if lrcModel is AgoraMiguLrcSentence {
+            cell.setupMusicXmlLrc(with: lrcModel as? AgoraMiguLrcSentence, progress: 0)
+        } else {
+            cell.setupMusicLrc(with: lrcModel as? AgoraLrcModel, progress: 0)
+        }
         if indexPath.row == 0 && preRow < 0 {
             cell.setupCurrentLrcScale()
         }
@@ -228,6 +277,10 @@ extension AgoraLrcView: UITableViewDataSource, UITableViewDelegate {
         let point = CGPoint(x: 0, y: scrollView.contentOffset.y + scrollView.bounds.height * 0.5)
         guard let indexPath = tableView.indexPathForRow(at: point) else { return }
         guard let model = dataArray?[indexPath.row] else { return }
-        seekToTime?(model.startTime() / 1000)
+        if let xmlModel = model as? AgoraMiguLrcSentence {
+            seekToTime?(xmlModel.startTime() / 1000)
+        } else if let lrcModel = model as? AgoraLrcModel {
+            seekToTime?(lrcModel.time)
+        }
     }
 }

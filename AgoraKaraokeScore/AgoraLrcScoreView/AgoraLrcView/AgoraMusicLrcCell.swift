@@ -50,8 +50,8 @@ class AgoraMusicLrcCell: UITableViewCell {
         }
     }
 
-    func setupMusicLrc(with lrcModel: AgoraMiguLrcSentence?,
-                       progress: CGFloat) {
+    func setupMusicXmlLrc(with lrcModel: AgoraMiguLrcSentence?,
+                          progress: CGFloat) {
         lrcLabel.text = lrcModel?.toSentence()
         lrcLabel.progress = progress
         lrcLabel.textColor = lrcConfig?.lrcNormalColor
@@ -61,6 +61,17 @@ class AgoraMusicLrcCell: UITableViewCell {
         }
     }
 
+    func setupMusicLrc(with lrcModel: AgoraLrcModel?,
+                       progress: CGFloat) {
+        lrcLabel.text = lrcModel?.lrc
+        lrcLabel.progress = progress
+        lrcLabel.textColor = lrcConfig?.lrcNormalColor
+        lrcLabel.font = lrcConfig?.lrcFontSize
+        UIView.animate(withDuration: 0.25) {
+            self.lrcLabel.transform = .identity
+        }
+    }
+    
     private func setupUI() {
         contentView.backgroundColor = .clear
         backgroundColor = .clear

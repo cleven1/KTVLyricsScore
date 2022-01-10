@@ -150,10 +150,17 @@ public class AgoraLrcScoreView: UIView {
 
     /// 歌词的URL
     public func setLrcUrl(url: String) {
-        AgoraDownLoadManager.manager.downloadZip(urlString: url) { lryic in
-            self.lrcView?.miguSongModel = lryic
+        AgoraDownLoadManager.manager.downloadLrcFile(urlString: url) { lryic in
+            if lryic is AgoraMiguSongLyric {
+                self.lrcView?.miguSongModel = lryic as? AgoraMiguSongLyric
+            } else {
+                self.lrcView?.lrcDatas = lryic as? [AgoraLrcModel]
+            }
+            self.scoreView?.isHidden = lryic is [AgoraLrcModel]
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
-                self.scoreView?.lrcSentence = lryic?.sentences
+                if let senences = lryic as? AgoraMiguSongLyric {
+                    self.scoreView?.lrcSentence = senences.sentences
+                }
                 self.downloadDelegate?.downloadLrcFinished?(url: url)
             }
         }
@@ -183,6 +190,8 @@ public class AgoraLrcScoreView: UIView {
     
     public func reset() {
         stop()
+        scoreView?.reset()
+        lrcView?.reset()
         lrcView?.removeFromSuperview()
         lrcView = nil
         scoreView?.removeFromSuperview()

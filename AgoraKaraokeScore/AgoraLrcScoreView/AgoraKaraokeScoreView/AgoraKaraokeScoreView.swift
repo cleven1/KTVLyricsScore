@@ -146,13 +146,13 @@ class AgoraKaraokeScoreView: UIView {
     private var spliceVoice: [Double] = []
     public func setVoicePitch(_ voicePitch: [Double]) {
         let time = CFAbsoluteTimeGetCurrent()
-        if (time - preTime) * 1000 < 200 {
+        if (time - preTime) * 1000 < 100 {
             spliceVoice.append(voicePitch.first ?? 0)
         } else {
             let sorted = spliceVoice.sorted()
             let h = scoreConfig.scoreViewHeight - scoreConfig.cursorHeight
             spliceVoice.forEach {
-                var y = pitchToY(min: (sorted.first ?? 0) - 50, max: (sorted.last ?? h) + 50, $0)
+                var y = pitchToY(min: (sorted.last ?? 0) - 50, max: (sorted.first ?? 0) + 50, $0)
                 y = y.isNaN ? 0 : y
                 if y == -.infinity || $0 == 0 {
                     y = h

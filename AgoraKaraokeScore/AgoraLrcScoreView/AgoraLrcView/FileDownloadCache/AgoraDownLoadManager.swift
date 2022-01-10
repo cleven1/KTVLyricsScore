@@ -10,7 +10,7 @@ import Zip
 
 class AgoraDownLoadManager {
     static let manager = AgoraDownLoadManager()
-    typealias Completion = (AgoraMiguSongLyric?) -> Void
+    typealias Completion = (Any?) -> Void
     typealias Sunccess = (String?) -> Void
     private lazy var request = AgoraRequestTask()
     private var urlString: String = ""
@@ -20,22 +20,26 @@ class AgoraDownLoadManager {
 
     public weak var delegate: AgoraLrcDownloadDelegate?
 
-    func downloadZip(urlString: String, completion: @escaping Completion) {
+    func downloadLrcFile(urlString: String, completion: @escaping Completion) {
         delegate?.beginDownloadLrc?(url: urlString)
         self.urlString = urlString
-        let xmlName = urlString.fileName.components(separatedBy: ".").first ?? ""
-        let xmlPath = AgoraCacheFileHandle.cacheFileExists(with: xmlName + ".xml")
-        let zipPath = AgoraCacheFileHandle.cacheFileExists(with: urlString)
+        let fileName = urlString.fileName.components(separatedBy: ".").first ?? ""
+        let xmlPath = AgoraCacheFileHandle.cacheFileExists(with: fileName + ".xml")
+        let lrcPath = AgoraCacheFileHandle.cacheFileExists(with: urlString)
         if xmlPath != nil {
-            parse(path: xmlPath ?? "", completion: completion)
-        } else if zipPath == nil {
+            parseXml(path: xmlPath ?? "", completion: completion)
+        } else if lrcPath == nil {
             guard let url = URL(string: urlString) else { return }
             delegate?.beginDownloadLrc?(url: urlString)
             request.delegate = self
             request.download(requestURL: url)
             self.completion[urlString] = completion
         } else {
-            unzip(path: zipPath ?? "", completion: completion)
+            if urlString.hasSuffix("zip") {
+                unzip(path: lrcPath ?? "", completion: completion)
+            } else {
+                parseLrc(path: lrcPath ?? "", completion: completion)
+            }
         }
     }
 
@@ -58,7 +62,7 @@ class AgoraDownLoadManager {
         let unZipPath = String.cacheFolderPath()
         do {
             try Zip.unzipFile(zipFile, destination: URL(fileURLWithPath: unZipPath), overwrite: true, password: nil, fileOutputHandler: { url in
-                self.parse(path: url.path, completion: completion)
+                self.parseXml(path: url.path, completion: completion)
                 try? FileManager.default.removeItem(atPath: path)
             })
         } catch {
@@ -70,15 +74,24 @@ class AgoraDownLoadManager {
                 return
             }
             try? FileManager.default.removeItem(atPath: path)
-            downloadZip(urlString: urlString, completion: completion)
+            downloadLrcFile(urlString: urlString, completion: completion)
             retryCount += 1
         }
     }
 
-    private func parse(path: String, completion: @escaping (AgoraMiguSongLyric?) -> Void) {
+    private func parseXml(path: String, completion: @escaping (AgoraMiguSongLyric?) -> Void) {
         let lyric = AgoraMiguSongLyric(lrcFile: path)
         DispatchQueue.main.async {
             completion(lyric)
+            self.delegate?.parseLrcFinished?()
+        }
+    }
+    private func parseLrc(path: String, completion: @escaping ([AgoraLrcModel]?) -> Void) {
+        let lyric = AgoraLrcParse()
+        let string = try? String(contentsOfFile: path)
+        lyric.analyzerLrc(lrcConnect: string ?? "")
+        DispatchQueue.main.async {
+            completion(lyric.lrcArray)
             self.delegate?.parseLrcFinished?()
         }
     }
@@ -97,10 +110,14 @@ extension AgoraDownLoadManager: AgoraLrcDownloadDelegate {
             }
         } else if url.fileName.hasPrefix(".xml") {
             guard let completion = completion[url] else { return }
-            parse(path: cacheFilePath, completion: completion)
+            parseXml(path: cacheFilePath, completion: completion)
         } else {
             guard let completion = completion[url] else { return }
-            unzip(path: cacheFilePath, completion: completion)
+            if url.hasSuffix(".zip") {
+                unzip(path: cacheFilePath, completion: completion)
+            } else {
+                parseLrc(path: cacheFilePath, completion: completion)
+            }
         }
     }
 
