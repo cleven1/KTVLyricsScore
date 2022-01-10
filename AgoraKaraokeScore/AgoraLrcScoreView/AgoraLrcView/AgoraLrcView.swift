@@ -60,6 +60,21 @@ class AgoraLrcView: UIView {
         }
     }
 
+    private lazy var statckView: UIStackView = {
+        let stackView = UIStackView()
+        stackView.alignment = .fill
+        stackView.axis = .vertical
+        stackView.distribution = .fill
+        stackView.spacing = 0
+        return stackView
+    }()
+    
+    private lazy var loadView: AgoraLoadingView = {
+        let view = AgoraLoadingView()
+        view.delegate = self
+        return view
+    }()
+    
     private lazy var tableView: UITableView = {
         let tableView = UITableView(frame: .zero, style: .plain)
         tableView.showsVerticalScrollIndicator = false
@@ -68,6 +83,7 @@ class AgoraLrcView: UIView {
         tableView.separatorStyle = .none
         tableView.backgroundColor = .clear
         tableView.scrollsToTop = false
+        tableView.setContentCompressionResistancePriority(.defaultHigh, for: .vertical)
         tableView.register(AgoraMusicLrcCell.self, forCellReuseIdentifier: "AgoaraLrcViewCell")
         return tableView
     }()
@@ -118,16 +134,24 @@ class AgoraLrcView: UIView {
 
     private func setupUI() {
         backgroundColor = .clear
+        statckView.translatesAutoresizingMaskIntoConstraints = false
+        loadView.translatesAutoresizingMaskIntoConstraints = false
         tableView.translatesAutoresizingMaskIntoConstraints = false
         tipsLabel.translatesAutoresizingMaskIntoConstraints = false
         lineView.translatesAutoresizingMaskIntoConstraints = false
-        addSubview(tableView)
+        addSubview(statckView)
+        statckView.addArrangedSubview(loadView)
+        statckView.addArrangedSubview(tableView)
         tableView.addSubview(tipsLabel)
         addSubview(lineView)
-        tableView.leadingAnchor.constraint(equalTo: leadingAnchor).isActive = true
-        tableView.topAnchor.constraint(equalTo: topAnchor).isActive = true
-        tableView.trailingAnchor.constraint(equalTo: trailingAnchor).isActive = true
-        tableView.bottomAnchor.constraint(equalTo: bottomAnchor).isActive = true
+        
+//        loadView.heightAnchor.constraint(equalToConstant: 20).isActive = true
+        
+        statckView.leadingAnchor.constraint(equalTo: leadingAnchor).isActive = true
+        statckView.topAnchor.constraint(equalTo: topAnchor).isActive = true
+        statckView.trailingAnchor.constraint(equalTo: trailingAnchor).isActive = true
+        statckView.bottomAnchor.constraint(equalTo: bottomAnchor).isActive = true
+        
         tipsLabel.centerXAnchor.constraint(equalTo: tableView.centerXAnchor).isActive = true
         tipsLabel.centerYAnchor.constraint(equalTo: tableView.centerYAnchor).isActive = true
 
@@ -146,6 +170,9 @@ class AgoraLrcView: UIView {
         }
         guard !(dataArray?.isEmpty ?? false) else { return }
         let time: TimeInterval = lrcDatas == nil ? 1000 : 1
+        if self.currentTime == 0 {
+            loadView.beginAnimation()
+        }
         self.currentTime = currentTime * time
         updatePerSecond()
     }
@@ -161,6 +188,7 @@ class AgoraLrcView: UIView {
         tipsLabel.textColor = lrcConfig.tipsColor
         tipsLabel.font = lrcConfig.tipsFont
         lineView.backgroundColor = lrcConfig.separatorLineColor
+        loadView.lrcConfig = lrcConfig
     }
 
     // MARK: - 更新歌词的时间
@@ -237,6 +265,18 @@ class AgoraLrcView: UIView {
             }
         }
         return nil
+    }
+}
+
+extension AgoraLrcView: AgoraLoadViewDelegate {
+    func getCurrentTime() -> TimeInterval {
+        guard let model = dataArray?.first else { return 0 }
+        if let xmlModel = model as? AgoraMiguLrcSentence {
+            return xmlModel.startTime() / 1000 - currentTime / 1000
+        } else if let lrcModel = model as? AgoraLrcModel {
+            return lrcModel.time - currentTime
+        }
+        return 0
     }
 }
 
