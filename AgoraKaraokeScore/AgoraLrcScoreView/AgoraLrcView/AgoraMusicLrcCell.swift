@@ -63,7 +63,7 @@ class AgoraMusicLrcCell: UITableViewCell {
 
     func setupMusicLrc(with lrcModel: AgoraLrcModel?,
                        progress: CGFloat) {
-        lrcLabel.text = lrcModel?.lrc
+        lrcLabel.text = lrcModel?.lrc?.trimmingCharacters(in: .whitespacesAndNewlines)
         lrcLabel.progress = progress
         lrcLabel.textColor = lrcConfig?.lrcNormalColor
         lrcLabel.font = lrcConfig?.lrcFontSize
