@@ -60,7 +60,6 @@ class AgoraLoadingView: UIView {
         timer.scheduledSecondsTimer(withName: "loadView", timeInterval: 120, queue: .main) { [weak self] _, time in
             guard let self = self else { return }
             let duration = self.delegate?.getCurrentTime() ?? 0
-            print("duration == \(duration)")
             if duration >= 3 {
                 let view = self.statckView.arrangedSubviews.last
                 self.hiddenView(view: view, isHidden: time.truncatingRemainder(dividingBy: 2) == 0)
