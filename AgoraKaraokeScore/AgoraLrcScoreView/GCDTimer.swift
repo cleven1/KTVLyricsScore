@@ -45,14 +45,16 @@ class GCDTimer {
     /// 毫秒级定时器
     /// - Parameters:
     ///   - name: 名称
-    ///   - timeInterval: 毫秒
+    ///   - countDown: 倒计时毫秒
+    ///   - timeInterval: 多少毫秒回调一次
     ///   - queue: 线程
     ///   - action: 回调
     func scheduledMillisecondsTimer(withName name: String?,
+                                    countDown: TimeInterval,
                                     milliseconds: TimeInterval,
                                     queue: DispatchQueue,
                                     action: @escaping ActionBlock ) {
-        currentDuration = milliseconds
+        currentDuration = countDown
         let scheduledName = name ?? Date().timeString()
         var timer = timerContainer[scheduledName]
         if timer == nil {
@@ -60,10 +62,10 @@ class GCDTimer {
             timer?.resume()
             timerContainer[scheduledName] = timer
         }
-        timer?.schedule(deadline: .now(), repeating: .milliseconds(1), leeway: .milliseconds(1))
+        timer?.schedule(deadline: .now(), repeating: .milliseconds(Int(milliseconds)), leeway: .milliseconds(1))
         timer?.setEventHandler(handler: { [weak self] in
             guard let self = self else { return }
-            self.currentDuration -= 1
+            self.currentDuration -= milliseconds
             action(scheduledName, self.currentDuration)
             if self.currentDuration <= 0 {
                 self.destoryTimer(withName: scheduledName)

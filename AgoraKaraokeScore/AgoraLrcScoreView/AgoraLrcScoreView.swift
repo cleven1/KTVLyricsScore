@@ -173,7 +173,10 @@ public class AgoraLrcScoreView: UIView {
 
     /// 开始滚动
     public func start() {
-        timer.scheduledMillisecondsTimer(withName: "", milliseconds: .infinity, queue: .main, action: { [weak self] _, duration in
+        timer.scheduledMillisecondsTimer(withName: "lrc",
+                                         countDown: .infinity,
+                                         milliseconds: 1,
+                                         queue: .main, action: { [weak self] _, duration in
             guard let self = self else { return }
             self.timerHandler()
         })

@@ -142,45 +142,61 @@ class AgoraKaraokeScoreView: UIView {
                                         animated: false)
     }
     
-    private var preTime: CFAbsoluteTime = 0
-    private var spliceVoice: [Double] = []
+//    private var preTime: CFAbsoluteTime = 0
+//    private var spliceVoice: [Double] = []
     public func setVoicePitch(_ voicePitch: [Double]) {
-        let time = CFAbsoluteTimeGetCurrent()
-        if (time - preTime) * 1000 < 100 {
-            spliceVoice.append(voicePitch.first ?? 0)
-        } else {
-            let sorted = spliceVoice.sorted()
-            let h = scoreConfig.scoreViewHeight - scoreConfig.cursorHeight
-            spliceVoice.forEach {
-                var y = pitchToY(min: (sorted.last ?? 0) - 50, max: (sorted.first ?? 0) + 50, $0)
-                y = y.isNaN ? 0 : y
-                if y == -.infinity || $0 == 0 {
-                    y = h
-                } else {
-                    y = y < 0 ? 0 : y > h ? h : y
-                }
-                if $0 == 0 {
-                    calcuSongScore(pitch: $0, y: h + scoreConfig.cursorHeight * 0.5)
-                    return
-                }
-                calcuSongScore(pitch: $0, y: y + scoreConfig.cursorHeight * 0.5)
-            }
-            spliceVoice.removeAll()
-            preTime = time
-        }
+//        let pitchArray = getPitchArray(voicePitch.count)
+//        guard !pitchArray.isEmpty else { return }
+//        for i in 0..<voicePitch.count {
+//            let pitchRef = voicePitch[i]
+//            let pitch = i < pitchArray.count ? pitchArray[i] : (pitchArray.first ?? 0)
+//            let toneRef = pitchToTone(pitch: pitchRef)
+//            let tone = pitchToTone(pitch: pitch)
+//            let diff = abs(toneRef - tone)
+//            if diff < 0.5 {
+//                currentScore += 2
+//
+//            } else if diff < 1 {
+//                currentScore += 1
+//
+//            }
+//        }
+        calcuSongScore(pitch: voicePitch.last ?? 0)
     }
+//    private func getPitchArray(_ count: Int) -> [Double] {
+//        guard count > 0 else { return [] }
+//        var pitchArray: [Double] = []
+//        for i in 0..<count {
+//            let time = currentTime - Double(count - i - 1) * (200.0 / Double(count))
+//            guard let model = dataArray?.first(where: { time >= $0.startTime && $0.endTime >= time }) else { continue }
+//            pitchArray.append(model.pitch)
+//        }
+//        return pitchArray
+//    }
+//    private func pitchToTone(pitch: Double) -> Double {
+//        let eps = 1e-6
+//        let tone = max(0, log2(pitch / 55 + eps)) * 12
+//        return tone
+//    }
+    
     private var preModel: AgoraScoreItemModel?
-    private func calcuSongScore(pitch: Double, y: CGFloat) {
+    private func calcuSongScore(pitch: Double) {
         let time = currentTime * 1000 - 30
         guard let model = dataArray?.first(where: { time >= $0.startTime * 1000 && $0.endTime * 1000 >= time }),    model.isEmptyCell == false
         else {
             isDrawingCell = false
-            cursorAnimation(y: y, isDraw: false)
+            cursorAnimation(y: scoreConfig.scoreViewHeight - scoreConfig.cursorHeight, isDraw: false)
             return
         }
-        if model.startTime == preModel?.startTime && model.endTime == preModel?.endTime {
+        
+        if preModel?.startTime == model.startTime
+            && preModel?.endTime == model.endTime
+            && pitch > 0 {
             return
         }
+        
+        let y = pitchToY(min: model.pitchMin, max: model.pitchMax, pitch)
+        
         // 计算线的中心位置
         let lineCenterY = (model.topKM + scoreConfig.lineHeight) - scoreConfig.lineHeight * 0.5
         var score = 100 - abs(y - lineCenterY)
@@ -189,10 +205,12 @@ class AgoraKaraokeScoreView: UIView {
             cursorAnimation(y: y, isDraw: true)
             currentScore += 2
             preModel = model
+            
         } else if score >= 85, pitch > 0 {
             cursorAnimation(y: y, isDraw: true)
             currentScore += 1
             preModel = model
+            
         } else {
             cursorAnimation(y: y, isDraw: false)
         }
@@ -254,6 +272,7 @@ class AgoraKaraokeScoreView: UIView {
             }
             model.startTime = startTime
             model.endTime = endTime
+            model.pitch = Double(tone.pitch)
             model.widthKM = calcuToWidth(time: endTime - startTime)
             model.leftKM = dataArray.map { $0.widthKM }.reduce(0, +)
             model.pitchMin = CGFloat(tones.sorted(by: { $0.pitch < $1.pitch }).first?.pitch ?? 0) - 50

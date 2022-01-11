@@ -35,6 +35,7 @@ struct AgoraScoreItemModel {
     var startTime: TimeInterval = 0
     var endTime: TimeInterval = 0
     var isEmptyCell: Bool = false
+    var pitch: Double = 0
     var pitchMin: CGFloat = 0
     var pitchMax: CGFloat = 0
 }
