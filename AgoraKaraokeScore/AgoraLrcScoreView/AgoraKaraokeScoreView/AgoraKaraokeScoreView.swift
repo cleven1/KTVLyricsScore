@@ -142,42 +142,9 @@ class AgoraKaraokeScoreView: UIView {
                                         animated: false)
     }
     
-//    private var preTime: CFAbsoluteTime = 0
-//    private var spliceVoice: [Double] = []
     public func setVoicePitch(_ voicePitch: [Double]) {
-//        let pitchArray = getPitchArray(voicePitch.count)
-//        guard !pitchArray.isEmpty else { return }
-//        for i in 0..<voicePitch.count {
-//            let pitchRef = voicePitch[i]
-//            let pitch = i < pitchArray.count ? pitchArray[i] : (pitchArray.first ?? 0)
-//            let toneRef = pitchToTone(pitch: pitchRef)
-//            let tone = pitchToTone(pitch: pitch)
-//            let diff = abs(toneRef - tone)
-//            if diff < 0.5 {
-//                currentScore += 2
-//
-//            } else if diff < 1 {
-//                currentScore += 1
-//
-//            }
-//        }
         calcuSongScore(pitch: voicePitch.last ?? 0)
     }
-//    private func getPitchArray(_ count: Int) -> [Double] {
-//        guard count > 0 else { return [] }
-//        var pitchArray: [Double] = []
-//        for i in 0..<count {
-//            let time = currentTime - Double(count - i - 1) * (200.0 / Double(count))
-//            guard let model = dataArray?.first(where: { time >= $0.startTime && $0.endTime >= time }) else { continue }
-//            pitchArray.append(model.pitch)
-//        }
-//        return pitchArray
-//    }
-//    private func pitchToTone(pitch: Double) -> Double {
-//        let eps = 1e-6
-//        let tone = max(0, log2(pitch / 55 + eps)) * 12
-//        return tone
-//    }
     
     private var preModel: AgoraScoreItemModel?
     private func calcuSongScore(pitch: Double) {

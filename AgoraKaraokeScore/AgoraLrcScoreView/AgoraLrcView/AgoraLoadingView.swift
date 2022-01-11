@@ -65,14 +65,20 @@ class AgoraLoadingView: UIView {
                 self.hiddenView(view: view, isHidden: time.truncatingRemainder(dividingBy: 2) == 0)
                 
             } else if duration >= 2 {
+                let lastView = self.statckView.arrangedSubviews.last
+                self.hiddenView(view: lastView, isHidden: true)
                 let view = self.statckView.arrangedSubviews[1]
                 self.hiddenView(view: view, isHidden: true)
                 
             } else if duration >= 1 {
-                let view = self.statckView.arrangedSubviews.first
+                let lastView = self.statckView.arrangedSubviews.last
+                self.hiddenView(view: lastView, isHidden: true)
+                let view = self.statckView.arrangedSubviews[1]
                 self.hiddenView(view: view, isHidden: true)
+                let firstView = self.statckView.arrangedSubviews.first
+                self.hiddenView(view: firstView, isHidden: true)
                 
-            } else {
+            } else if duration >= 0 {
                 self.timer.destoryTimer(withName: "loadView")
                 UIView.animate(withDuration: 0.25) {
                     self.isHidden = true

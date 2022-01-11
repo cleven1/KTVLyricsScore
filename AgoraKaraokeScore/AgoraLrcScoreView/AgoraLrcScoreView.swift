@@ -10,7 +10,7 @@ import UIKit
 @objc
 public
 protocol AgoraLrcViewDelegate {
-    /// 秒
+    /// 当前播放器的时间 单位: 秒
     func getPlayerCurrentTime() -> TimeInterval
     /// 获取歌曲总时长
     func getTotalTime() -> TimeInterval
@@ -103,6 +103,7 @@ public class AgoraLrcScoreView: UIView {
         get {
             guard _scoreView == nil else { return _scoreView }
             _scoreView = AgoraKaraokeScoreView()
+            _scoreView?.delegate = scoreDelegate
             return _scoreView
         }
         set {
@@ -157,7 +158,7 @@ public class AgoraLrcScoreView: UIView {
                 self.lrcView?.lrcDatas = lryic as? [AgoraLrcModel]
             }
             self.scoreView?.isHidden = lryic is [AgoraLrcModel]
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
                 if let senences = lryic as? AgoraMiguSongLyric {
                     self.scoreView?.lrcSentence = senences.sentences
                 }

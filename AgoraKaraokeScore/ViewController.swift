@@ -13,6 +13,7 @@ class ViewController: UIViewController {
         let lrcScoreView = AgoraLrcScoreView(delegate: self)
         lrcScoreView.config.scoreConfig.scoreViewHeight = 100
         lrcScoreView.config.scoreConfig.emitterColors = [.systemPink]
+        lrcScoreView.config.lrcConfig.lrcFontSize = .systemFont(ofSize: 15)
         return lrcScoreView
     }()
     
