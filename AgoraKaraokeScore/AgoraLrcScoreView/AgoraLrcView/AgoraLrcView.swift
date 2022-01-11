@@ -322,5 +322,6 @@ extension AgoraLrcView: UITableViewDataSource, UITableViewDelegate {
         } else if let lrcModel = model as? AgoraLrcModel {
             seekToTime?(lrcModel.time)
         }
+        loadView.hiddenLoadView()
     }
 }

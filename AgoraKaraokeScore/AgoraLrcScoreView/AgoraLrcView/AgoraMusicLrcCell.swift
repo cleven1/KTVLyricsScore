@@ -102,9 +102,9 @@ class AgoraLrcLabel: UILabel {
             return
         }
         let lines = Int(bounds.height / font.lineHeight)
-        let padingTop = (bounds.height - CGFloat(lines) * font.lineHeight) / 2
+        let padingTop = (bounds.height - CGFloat(lines) * font.lineHeight) / CGFloat(lines)
         let maxWidth = sizeThatFits(CGSize(width: CGFloat(MAXFLOAT),
-                                           height: font.lineHeight * 2)).width
+                                           height: font.lineHeight * CGFloat(lines))).width
         let oneLineProgress = maxWidth <= bounds.width ? 1 : bounds.width / maxWidth
         let path = CGMutablePath()
         for index in 0 ..< lines {
@@ -124,7 +124,7 @@ class AgoraLrcLabel: UILabel {
                                       height: font.lineHeight)
                 } else {
                     let width = maxWidth.truncatingRemainder(dividingBy: bounds.width)
-                    let dw = (bounds.width - width) / 2 + maxWidth * leftProgress
+                    let dw = (bounds.width - width) / CGFloat(lines) + maxWidth * leftProgress
                     fillRect = CGRect(x: 0,
                                       y: padingTop + CGFloat(index) * font.lineHeight,
                                       width: dw,

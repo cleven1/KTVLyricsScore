@@ -46,6 +46,8 @@ class AgoraKaraokeScoreCell: UICollectionViewCell {
         scoreModel = model
         scoreConfig = config
         scoreLineView.isHidden = model.isEmptyCell
+        CATransaction.begin()
+        CATransaction.setDisableActions(true)
         scoreLineView.frame = CGRect(x: 0,
                                      y: model.topKM,
                                      width: model.widthKM,
@@ -53,6 +55,7 @@ class AgoraKaraokeScoreCell: UICollectionViewCell {
         scoreLineView.backgroundColor = config.normalColor
         scoreLineView.layer.cornerRadius = config.lineHeight * 0.5
         keepAddingMaskLayer(offsetX: model.offsetXKM)
+        CATransaction.commit()
     }
 
     private func keepAddingMaskLayer(offsetX: CGFloat) {
@@ -78,7 +81,6 @@ class AgoraKaraokeScoreCell: UICollectionViewCell {
 
         default: break
         }
-
         let layerL = hasLayer ? (startPoi - model.leftKM) : startPoi
         let layerW = offsetX - (hasLayer ? startPoi : model.leftKM)
         let lineH = scoreConfig?.lineHeight ?? 5

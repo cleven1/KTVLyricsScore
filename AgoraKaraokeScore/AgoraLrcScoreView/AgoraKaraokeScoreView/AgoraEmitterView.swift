@@ -15,7 +15,6 @@ class AgoraEmitterView: UIView {
         emitter.emitterPosition = center
         // 3.开启三维效果
         emitter.preservesDepth = true
-        emitter.isHidden = true
         return emitter
     }()
 
@@ -45,8 +44,8 @@ class AgoraEmitterView: UIView {
         // 4.创建粒子, 并且设置例子相关的属性
         let cell = CAEmitterCell()
         // 4.2.设置粒子速度
-        cell.velocity = 100
-        cell.velocityRange = 10
+        cell.velocity = 1
+        cell.velocityRange = 1
         // 4.3.设置例子的大小
         cell.scale = 0.6
         cell.scaleRange = 0.3
@@ -54,20 +53,22 @@ class AgoraEmitterView: UIView {
         cell.emissionLongitude = CGFloat.pi * 3
         cell.emissionRange = CGFloat.pi / 6
         // 4.5.设置例子的存活时间
-        cell.lifetime = 0.3
-        cell.lifetimeRange = 1.5
+        cell.lifetime = 0.7
+        cell.lifetimeRange = 1
         // 4.6.设置粒子旋转
         cell.spin = CGFloat.pi / 2
         cell.spinRange = CGFloat.pi / 4
         // 4.6.设置例子每秒弹出的个数
-        cell.birthRate = 0.001
-
-        cell.alphaSpeed = 0.4
+        cell.birthRate = 1
+        cell.alphaRange = 0.9
+        cell.alphaSpeed = -0.35
         // 4.7.设置粒子展示的图片
 //        cell.contents = UIImage()?.cgImage
         // 设置发射器的位置
-        cell.birthRate = 20
-        cell.velocity = 100
+        cell.birthRate = 5
+        // 初始速度
+        cell.velocity = 90
+        
         cell.name = name
         return cell
     }
@@ -77,7 +78,7 @@ class AgoraEmitterView: UIView {
     }
 
     func startEmittering() {
-        emitter.isHidden = false
+        emitter.lifetime = 1.0
         layer.addSublayer(emitter)
         if config?.emitterImages == nil {
             emitter.emitterCells?.forEach({
@@ -95,9 +96,7 @@ class AgoraEmitterView: UIView {
 
     /// 移除CAEmitterLayer
     func stopEmittering() {
-        emitter.isHidden = true
-        emitter.removeAllAnimations()
-        emitter.removeFromSuperlayer()
+        emitter.lifetime = 0.0
     }
 }
 

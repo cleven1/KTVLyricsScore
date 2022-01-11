@@ -87,6 +87,11 @@ class AgoraLoadingView: UIView {
         }
     }
     
+    func hiddenLoadView() {
+        timer.destoryTimer(withName: "loadView")
+        self.isHidden = true
+    }
+    
     private func hiddenView(view: UIView?, isHidden: Bool) {
         view?.alpha = isHidden ? 0.0 : 1.0
     }
