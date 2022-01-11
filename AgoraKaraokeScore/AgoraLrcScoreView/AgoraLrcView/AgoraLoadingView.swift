@@ -78,7 +78,7 @@ class AgoraLoadingView: UIView {
                 let firstView = self.statckView.arrangedSubviews.first
                 self.hiddenView(view: firstView, isHidden: true)
                 
-            } else if duration >= 0 {
+            } else if duration < 1 && time < 115 {
                 self.timer.destoryTimer(withName: "loadView")
                 UIView.animate(withDuration: 0.25) {
                     self.isHidden = true
