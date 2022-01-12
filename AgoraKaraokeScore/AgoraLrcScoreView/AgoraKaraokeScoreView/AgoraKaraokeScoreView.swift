@@ -142,15 +142,9 @@ class AgoraKaraokeScoreView: UIView {
         let time = currentTime * 1000 - 30
         guard let model = dataArray?.first(where: { time >= $0.startTime * 1000 && $0.endTime * 1000 >= time }),    model.isEmptyCell == false
         else {
-            triangleView.updateAlpha(at: 0)
             isDrawingCell = false
             cursorAnimation(y: scoreConfig.scoreViewHeight - scoreConfig.cursorHeight * 0.5, isDraw: false)
-            return
-        }
-        
-        if preModel?.startTime == model.startTime
-            && preModel?.endTime == model.endTime
-            && pitch > 0 {
+            triangleView.updateAlpha(at: 0)
             return
         }
         
@@ -160,21 +154,31 @@ class AgoraKaraokeScoreView: UIView {
         let lineCenterY = (model.topKM + scoreConfig.lineHeight) - scoreConfig.lineHeight * 0.5
         var score = 100 - abs(y - lineCenterY)
         score = score > 100 ? 100 : score < 0 ? 0 : score
-        if score >= 95, pitch > 0 {
-            triangleView.updateAlpha(at: pitch <= 0 ? 0 : score / 100)
+        
+        if preModel?.startTime == model.startTime
+            && preModel?.endTime == model.endTime
+            && score >= 85 {
             cursorAnimation(y: y, isDraw: true)
+            triangleView.updateAlpha(at: pitch <= 0 ? 0 : score / 100)
+            return
+        }
+        
+        if score >= 95, pitch > 0 {
+            cursorAnimation(y: y, isDraw: true)
+            triangleView.updateAlpha(at: pitch <= 0 ? 0 : score / 100)
             currentScore += 2
+            preModel = model
             
         } else if score >= 85, pitch > 0 {
-            triangleView.updateAlpha(at: pitch <= 0 ? 0 : score / 100)
             cursorAnimation(y: y, isDraw: true)
+            triangleView.updateAlpha(at: pitch <= 0 ? 0 : score / 100)
             currentScore += 1
+            preModel = model
             
         } else {
-            triangleView.updateAlpha(at: 0)
             cursorAnimation(y: y, isDraw: false)
+            triangleView.updateAlpha(at: 0)
         }
-        preModel = model
         delegate?.agoraKaraokeScore?(score: currentScore > totalScore ? totalScore : currentScore,
                                      totalScore: totalScore)
     }
