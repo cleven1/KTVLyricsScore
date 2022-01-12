@@ -14,6 +14,7 @@ class ViewController: UIViewController {
         lrcScoreView.config.scoreConfig.scoreViewHeight = 100
         lrcScoreView.config.scoreConfig.emitterColors = [.systemPink]
         lrcScoreView.config.lrcConfig.lrcFontSize = .systemFont(ofSize: 15)
+        lrcScoreView.config.scoreConfig.tailAnimateColor = .yellow
         return lrcScoreView
     }()
     

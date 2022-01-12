@@ -37,7 +37,7 @@ class AgoraEmitterView: UIView {
                                 createEmitterCell(name: "3"),
                                 createEmitterCell(name: "4")]
         // 6.将发射器的layer添加到父layer中
-//        layer.addSublayer(emitter)
+        layer.addSublayer(emitter)
     }
     
     private func createEmitterCell(name: String) -> CAEmitterCell {
@@ -79,7 +79,6 @@ class AgoraEmitterView: UIView {
 
     func startEmittering() {
         emitter.lifetime = 1.0
-        layer.addSublayer(emitter)
         if config?.emitterImages == nil {
             emitter.emitterCells?.forEach({
                 let image = UIImage(color: config?.emitterColors.randomElement() ?? .red,

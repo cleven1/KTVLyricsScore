@@ -83,17 +83,8 @@ class AgoraKaraokeScoreView: UIView {
         return view
     }()
 
-    private lazy var animation: CABasicAnimation = {
-        let animation = CABasicAnimation(keyPath: "position.y")
-        animation.duration = 3.0
-        animation.fillMode = .forwards
-        animation.isRemovedOnCompletion = true
-        animation.repeatCount = 1
-        animation.timingFunction = CAMediaTimingFunction(name: .easeInEaseOut)
-        return animation
-    }()
-
     private lazy var emitterView = AgoraEmitterView()
+    private lazy var triangleView = AgoraTriangleView()
     
     private var animationDuration: TimeInterval = 0.25
     private var status: AgoraKaraokeScoreStatus = .`init`
@@ -151,8 +142,9 @@ class AgoraKaraokeScoreView: UIView {
         let time = currentTime * 1000 - 30
         guard let model = dataArray?.first(where: { time >= $0.startTime * 1000 && $0.endTime * 1000 >= time }),    model.isEmptyCell == false
         else {
+            triangleView.updateAlpha(at: 0)
             isDrawingCell = false
-            cursorAnimation(y: scoreConfig.scoreViewHeight - scoreConfig.cursorHeight, isDraw: false)
+            cursorAnimation(y: scoreConfig.scoreViewHeight - scoreConfig.cursorHeight * 0.5, isDraw: false)
             return
         }
         
@@ -169,18 +161,20 @@ class AgoraKaraokeScoreView: UIView {
         var score = 100 - abs(y - lineCenterY)
         score = score > 100 ? 100 : score < 0 ? 0 : score
         if score >= 95, pitch > 0 {
+            triangleView.updateAlpha(at: pitch <= 0 ? 0 : score / 100)
             cursorAnimation(y: y, isDraw: true)
             currentScore += 2
-            preModel = model
             
         } else if score >= 85, pitch > 0 {
+            triangleView.updateAlpha(at: pitch <= 0 ? 0 : score / 100)
             cursorAnimation(y: y, isDraw: true)
             currentScore += 1
-            preModel = model
             
         } else {
+            triangleView.updateAlpha(at: 0)
             cursorAnimation(y: y, isDraw: false)
         }
+        preModel = model
         delegate?.agoraKaraokeScore?(score: currentScore > totalScore ? totalScore : currentScore,
                                      totalScore: totalScore)
     }
@@ -293,6 +287,7 @@ class AgoraKaraokeScoreView: UIView {
         addSubview(separatorVerticalLine)
         addSubview(separatorTopLine)
         addSubview(separatorBottomLine)
+        emitterView.insertSubview(triangleView, at: 0)
         addSubview(cursorView)
         addSubview(emitterView)
 
@@ -301,6 +296,7 @@ class AgoraKaraokeScoreView: UIView {
         separatorTopLine.translatesAutoresizingMaskIntoConstraints = false
         separatorBottomLine.translatesAutoresizingMaskIntoConstraints = false
         cursorView.translatesAutoresizingMaskIntoConstraints = false
+        triangleView.translatesAutoresizingMaskIntoConstraints = false
 
         collectionView.leadingAnchor.constraint(equalTo: leadingAnchor).isActive = true
         collectionView.topAnchor.constraint(equalTo: topAnchor).isActive = true
@@ -326,10 +322,17 @@ class AgoraKaraokeScoreView: UIView {
         cursorView.widthAnchor.constraint(equalToConstant: scoreConfig.cursorWidth).isActive = true
         cursorView.heightAnchor.constraint(equalToConstant: scoreConfig.cursorHeight).isActive = true
         cursorTopCons?.isActive = true
+        
+        triangleView.trailingAnchor.constraint(equalTo: cursorView.leadingAnchor, constant: 1).isActive = true
+        triangleView.centerYAnchor.constraint(equalTo: cursorView.centerYAnchor).isActive = true
+        triangleView.widthAnchor.constraint(equalToConstant: 45).isActive = true
+        triangleView.heightAnchor.constraint(equalToConstant: 6).isActive = true
+        
         updateUI()
     }
 
     private func updateUI() {
+        triangleView.config = scoreConfig
         emitterView.config = scoreConfig
         emitterView.isHidden = scoreConfig.isHiddenEmitterView
         cursorView.layer.cornerRadius = scoreConfig.cursorHeight * 0.5
