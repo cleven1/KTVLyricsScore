@@ -158,12 +158,10 @@ public class AgoraLrcScoreView: UIView {
                 self.lrcView?.lrcDatas = lryic as? [AgoraLrcModel]
             }
             self.scoreView?.isHidden = lryic is [AgoraLrcModel]
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                if let senences = lryic as? AgoraMiguSongLyric {
-                    self.scoreView?.lrcSentence = senences.sentences
-                }
-                self.downloadDelegate?.downloadLrcFinished?(url: url)
+            if let senences = lryic as? AgoraMiguSongLyric {
+                self.scoreView?.lrcSentence = senences.sentences
             }
+            self.downloadDelegate?.downloadLrcFinished?(url: url)
         }
     }
 
@@ -176,7 +174,7 @@ public class AgoraLrcScoreView: UIView {
     public func start() {
         timer.scheduledMillisecondsTimer(withName: "lrc",
                                          countDown: .infinity,
-                                         milliseconds: 1,
+                                         milliseconds: 17,
                                          queue: .main, action: { [weak self] _, duration in
             guard let self = self else { return }
             self.timerHandler()

@@ -208,7 +208,7 @@ class AgoraKaraokeScoreView: UIView {
     }
 
     private func pitchToY(min: CGFloat, max: CGFloat, _ value: CGFloat) -> CGFloat {
-        let viewH = frame.height - scoreConfig.lineHeight
+        let viewH = scoreConfig.scoreViewHeight - scoreConfig.lineHeight
         let y = viewH - (viewH / (max - min) * (value - min))
         return y.isNaN ? 0 : y
     }
