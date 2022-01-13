@@ -189,6 +189,7 @@ class AgoraLrcView: UIView {
         tipsLabel.font = lrcConfig.tipsFont
         lineView.backgroundColor = lrcConfig.separatorLineColor
         loadView.lrcConfig = lrcConfig
+        tableView.isScrollEnabled = lrcConfig.isDrag
     }
 
     // MARK: - 更新歌词的时间

@@ -34,4 +34,6 @@ public struct AgoraLrcConfigModel {
     public var waitingViewBgColor: UIColor? = .gray
     /// 等待开始圆点大小 默认: 10
     public var waitingViewSize: CGFloat = 10
+    /// 是否可以拖动歌词 默认: true
+    public var isDrag: Bool = true
 }

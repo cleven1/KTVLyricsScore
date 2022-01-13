@@ -70,6 +70,8 @@
     public var waitingViewBgColor: UIColor? = .gray
     /// 等待开始圆点大小 默认: 10
     public var waitingViewSize: CGFloat = 10
+    /// 是否可以拖动歌词 默认: true
+    public var isDrag: Bool = true
 ```
 
 ##### 评分配置
@@ -105,6 +107,8 @@
     public var emitterImages: [UIImage]?
     /// emitterImages为空默认使用颜色创建粒子动画
     public var emitterColors: [UIColor] = [.red]
+    /// 尾部动画图片
+    public var tailAnimateImage: UIImage?
     /// 尾部动画颜色
     public var tailAnimateColor: UIColor? = .yellow
     /// 评分默认分数: 50

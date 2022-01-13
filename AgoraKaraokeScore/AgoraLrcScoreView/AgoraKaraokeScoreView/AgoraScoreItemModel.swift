@@ -71,7 +71,9 @@ public struct AgoraScoreItemConfigModel {
     public var emitterImages: [UIImage]?
     /// emitterImages为空默认使用颜色创建粒子动画
     public var emitterColors: [UIColor] = [.red]
-    /// 尾部动画颜色
+    /// 尾部动画图片
+    public var tailAnimateImage: UIImage?
+    /// 尾部动画颜色 图片为空时使用颜色
     public var tailAnimateColor: UIColor? = .yellow
     /// 评分默认分数: 50
     public var defaultScore: Double = 50

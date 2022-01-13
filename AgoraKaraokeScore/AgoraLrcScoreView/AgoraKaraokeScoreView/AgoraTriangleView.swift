@@ -31,7 +31,10 @@ class AgoraTriangleView: UIView {
     }
     
     override func draw(_ rect: CGRect) {
-        
+        if config?.tailAnimateImage != nil {
+            layer.contents = config?.tailAnimateImage?.cgImage
+            return
+        }
         guard let context = UIGraphicsGetCurrentContext() else { return }
         
         context.beginPath()
