@@ -71,11 +71,8 @@ class ViewController: UIViewController {
     
     private func createData() {
         // 下载歌词
-        lrcScoreView.setLrcUrl(url: "https://webdemo.agora.io/ktv/005.xml")
-//        lrcScoreView.setLrcUrl(url: "https://accktv.sd-rtn.com/202201101620/1caec1a588dbb3d9faf3edf1bb58b5e7/release/lyric/lrc/1/0609f0627e114a669008d26e312f7613.lrc")
-//        lrcScoreView.setLrcUrl(url: "https://accktv.sd-rtn.com/202201111036/09b56a1e7780ba864063c13547451259/release/lyric/zip_utf8/1/06fc83878ca54245855fdf5c0f9ddb25.zip")
-//        lrcScoreView.setLrcUrl(url: "https://accktv.sd-rtn.com/202112301031/ac49974af7a4a5aae49ada78e691b0d2/release/lyric/zip_utf8/1/db4d162c37d64b189167362a156b7e0d.zip")
-//        lrcScoreView.setLrcUrl(url: "https://accktv.sd-rtn.com/202112211435/bb7a8d52d3c4aaf40187aa1dbed49ee7/release/lyric/zip_utf8/1/71e2988a08dc4412b8573fbc47f5ffc3.zip")
+//        lrcScoreView.setLrcUrl(url: "https://webdemo.agora.io/ktv/005.xml")
+        lrcScoreView.setLrcUrl(url: "https://github.com/cleven1/KTVLrcScore/blob/main/005.xml")
     }
     
     private var audioPlayer: AVAudioPlayer?
