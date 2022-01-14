@@ -49,13 +49,6 @@ protocol AgoraLrcDownloadDelegate {
     optional func parseLrcFinished()
 }
 
-@objc
-public
-protocol AgoraKaraokeScoreDelegate {
-    /// 分数实时回调
-    @objc optional func agoraKaraokeScore(score: Double, totalScore: Double)
-}
-
 public class AgoraLrcScoreView: UIView {
     /// 配置
     public var config: AgoraLrcScoreConfigModel = .init() {

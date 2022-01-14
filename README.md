@@ -6,6 +6,8 @@
 
 支持XML歌词解析, LRC歌词解析, 解决了多行歌词进度渲染的问题, 评分根据人声实时计算评分
 
+欢迎各位提交PR, 有问题也可提issue, 如果对您有帮助请留下你的小星星
+
 ![um0za-vj662.gif](cbe5c0eabd05bedff798ad2b4cc85df5.gif)
 
 ## 使用方法
@@ -174,8 +176,12 @@ weak var scoreDelegate: AgoraKaraokeScoreDelegate?
 
 protocol AgoraKaraokeScoreDelegate {
     /// 分数实时回调
-    @objc optional func agoraKaraokeScore(score: Double, totalScore: Double)
+    /// score: 每次增加的分数
+    /// cumulativeScore: 累加分数
+    /// totalScore: 总分
+    @objc optional func agoraKaraokeScore(score: Double, cumulativeScore: Double, totalScore: Double)
 }
+
 ```
 
 <br/>
@@ -183,6 +189,8 @@ protocol AgoraKaraokeScoreDelegate {
 ### 集成方式
 
 ##### 本地pod引入
+
+把 'AgoraLrcScoreView' 复制到根目录, 执行pod
 
 ```ruby
 pod 'AgoraLrcScore', :path => "AgoraLrcScoreView"
