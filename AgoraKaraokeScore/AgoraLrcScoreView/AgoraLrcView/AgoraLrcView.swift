@@ -87,6 +87,16 @@ class AgoraLrcView: UIView {
         tableView.register(AgoraMusicLrcCell.self, forCellReuseIdentifier: "AgoaraLrcViewCell")
         return tableView
     }()
+    
+    private lazy var gradientLayer: CAGradientLayer = {
+        let gradientLayer = CAGradientLayer()
+        gradientLayer.colors = [UIColor(white: 0, alpha: 0.05).cgColor,
+                                UIColor(white: 0, alpha: 0.8).cgColor]
+        gradientLayer.locations = [0.7, 1.0]
+        gradientLayer.startPoint = CGPoint(x: 0, y: 0)
+        gradientLayer.endPoint = CGPoint(x: 0, y: 1)
+        return gradientLayer
+    }()
 
     /** 提示 */
     private lazy var tipsLabel: UILabel = {
@@ -130,6 +140,12 @@ class AgoraLrcView: UIView {
                                               left: 0,
                                               bottom: margin,
                                               right: 0)
+        
+        gradientLayer.frame = CGRect(x: 0,
+                                     y: 0,
+                                     width: bounds.width,
+                                     height: lrcConfig.bottomMaskHeight > 0 ? lrcConfig.bottomMaskHeight : bounds.height)
+        tableView.superview?.layer.addSublayer(gradientLayer)
     }
 
     private func setupUI() {
@@ -144,9 +160,7 @@ class AgoraLrcView: UIView {
         statckView.addArrangedSubview(tableView)
         tableView.addSubview(tipsLabel)
         addSubview(lineView)
-        
-//        loadView.heightAnchor.constraint(equalToConstant: 20).isActive = true
-        
+                
         statckView.leadingAnchor.constraint(equalTo: leadingAnchor).isActive = true
         statckView.topAnchor.constraint(equalTo: topAnchor).isActive = true
         statckView.trailingAnchor.constraint(equalTo: trailingAnchor).isActive = true
@@ -162,7 +176,7 @@ class AgoraLrcView: UIView {
 
         updateUI()
     }
-
+    
     func start(currentTime: TimeInterval) {
         if tableView.backgroundColor != .clear {
             tableView.backgroundColor = .clear
@@ -190,10 +204,12 @@ class AgoraLrcView: UIView {
         lineView.backgroundColor = lrcConfig.separatorLineColor
         loadView.lrcConfig = lrcConfig
         tableView.isScrollEnabled = lrcConfig.isDrag
+        gradientLayer.locations = lrcConfig.bottomMaskLocations
+        gradientLayer.colors = lrcConfig.bottomMaskColors
+        gradientLayer.isHidden = lrcConfig.isHiddenBottomMask
     }
-
+    
     // MARK: - 更新歌词的时间
-
     private func updatePerSecond() {
         if lrcDatas != nil {
             if let lrc = getLrc() {

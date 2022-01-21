@@ -73,6 +73,15 @@
     public var waitingViewSize: CGFloat = 10
     /// 是否可以拖动歌词 默认: true
     public var isDrag: Bool = true
+    /// 底部蒙层颜色
+    public var bottomMaskColors: [CGColor] = [UIColor(white: 0, alpha: 0.05).cgColor,
+                                              UIColor(white: 0, alpha: 0.8).cgColor]
+    /// 蒙层位置
+    public var bottomMaskLocations: [NSNumber] = [0.7, 1.0]
+    /// 蒙层高度, 默认: 视图的高
+    public var bottomMaskHeight: CGFloat = 0
+    /// 是否隐藏底部蒙层
+    public var isHiddenBottomMask: Bool = false
 ```
 
 ##### 评分配置
