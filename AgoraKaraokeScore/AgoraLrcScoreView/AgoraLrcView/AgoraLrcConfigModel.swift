@@ -30,6 +30,8 @@ public struct AgoraLrcConfigModel {
     public var lrcHighlightScaleSize: Double = 1.1
     /// 歌词左右两边间距
     public var lrcLeftAndRightMargin: CGFloat = 15
+    /// 是否隐藏等待开始圆点
+    public var isHiddenWatitingView: Bool = false
     /// 等待开始圆点背景色 默认: 灰色
     public var waitingViewBgColor: UIColor? = .gray
     /// 等待开始圆点大小 默认: 10

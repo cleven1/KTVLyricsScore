@@ -203,10 +203,12 @@ class AgoraLrcView: UIView {
         tipsLabel.font = lrcConfig.tipsFont
         lineView.backgroundColor = lrcConfig.separatorLineColor
         loadView.lrcConfig = lrcConfig
+        loadView.isHidden = lrcConfig.isHiddenWatitingView
         tableView.isScrollEnabled = lrcConfig.isDrag
         gradientLayer.locations = lrcConfig.bottomMaskLocations
         gradientLayer.colors = lrcConfig.bottomMaskColors
         gradientLayer.isHidden = lrcConfig.isHiddenBottomMask
+        
     }
     
     // MARK: - 更新歌词的时间

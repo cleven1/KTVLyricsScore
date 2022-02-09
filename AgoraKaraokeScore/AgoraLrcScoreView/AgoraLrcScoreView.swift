@@ -57,6 +57,7 @@ public class AgoraLrcScoreView: UIView {
             lrcView!.lrcConfig = config.lrcConfig
             scoreViewHCons?.constant = scoreView?.scoreConfig.scoreViewHeight ?? 0
             scoreViewHCons?.isActive = true
+            scoreView?.isHidden = config.isHiddenScoreView
             statckView.spacing = config.spacing
             setupBackgroundImage()
         }
@@ -150,7 +151,7 @@ public class AgoraLrcScoreView: UIView {
             } else {
                 self.lrcView?.lrcDatas = lryic as? [AgoraLrcModel]
             }
-            self.scoreView?.isHidden = lryic is [AgoraLrcModel]
+            self.scoreView?.isHidden = self.config.isHiddenScoreView || lryic is [AgoraLrcModel]
             if let senences = lryic as? AgoraMiguSongLyric {
                 self.scoreView?.lrcSentence = senences.sentences
             }
