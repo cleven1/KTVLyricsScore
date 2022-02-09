@@ -108,7 +108,7 @@ extension AgoraDownLoadManager: AgoraLrcDownloadDelegate {
             DispatchQueue.main.async {
                 self.success[url]?(cacheFilePath)
             }
-        } else if url.fileName.hasPrefix(".xml") {
+        } else if url.fileName.hasSuffix(".xml") {
             guard let completion = completion[url] else { return }
             parseXml(path: cacheFilePath, completion: completion)
         } else {

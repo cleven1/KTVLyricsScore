@@ -72,7 +72,8 @@ class ViewController: UIViewController {
     private func createData() {
         // 下载歌词
 //        lrcScoreView.setLrcUrl(url: "https://webdemo.agora.io/ktv/005.xml")
-        lrcScoreView.setLrcUrl(url: "https://github.com/cleven1/KTVLrcScore/blob/main/005.xml")
+//        lrcScoreView.setLrcUrl(url: "https://github.com/cleven1/KTVLrcScore/blob/main/005.xml")
+        lrcScoreView.setLrcUrl(url: "https://webdemo.agora.io/ktv/005.xml")
     }
     
     private var audioPlayer: AVAudioPlayer?
