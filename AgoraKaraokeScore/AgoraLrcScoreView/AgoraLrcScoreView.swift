@@ -84,6 +84,9 @@ public class AgoraLrcScoreView: UIView {
         try? FileManager.default.removeItem(atPath: String.cacheFolderPath())
     }
 
+    /// 是否开始
+    public var isStart: Bool = false
+
     private lazy var statckView: UIStackView = {
         let stackView = UIStackView()
         stackView.alignment = .fill
@@ -92,6 +95,7 @@ public class AgoraLrcScoreView: UIView {
         stackView.spacing = 0
         return stackView
     }()
+
     private var _scoreView: AgoraKaraokeScoreView?
     private var scoreView: AgoraKaraokeScoreView? {
         get {
@@ -104,6 +108,7 @@ public class AgoraLrcScoreView: UIView {
             _scoreView = newValue
         }
     }
+
     private var _lrcView: AgoraLrcView?
     private var lrcView: AgoraLrcView? {
         get {
@@ -125,6 +130,8 @@ public class AgoraLrcScoreView: UIView {
 
     private lazy var timer = GCDTimer()
     private var scoreViewHCons: NSLayoutConstraint?
+    private var currentTime: TimeInterval = 0
+    private var totalTime: TimeInterval = 0
 
     public init(delegate: AgoraLrcViewDelegate) {
         super.init(frame: .zero)
@@ -164,26 +171,31 @@ public class AgoraLrcScoreView: UIView {
         scoreView?.setVoicePitch(voicePitch)
     }
 
+    private var preTime: TimeInterval = 0
+    private var isStop: Bool = false
     /// 开始滚动
     public func start() {
-        timer.scheduledMillisecondsTimer(withName: "lrc",
-                                         countDown: .infinity,
-                                         milliseconds: 17,
-                                         queue: .main, action: { [weak self] _, duration in
+        isStart = true
+        timer.scheduledMillisecondsTimer(withName: "lrc", countDown: 1000 * 60 * 30, milliseconds: 10, queue: .main) { [weak self] _, duration in
             guard let self = self else { return }
-            self.timerHandler()
-        })
-        guard statckView.arrangedSubviews.isEmpty else { return }
-        updateUI()
-        config.scoreConfig = config.scoreConfig
-        config.lrcConfig = config.lrcConfig
+            if duration.truncatingRemainder(dividingBy: 1000) == 0 {
+                let currentTime = self.roundToPlaces(value: self.delegate?.getPlayerCurrentTime() ?? 0, places: 10)
+                self.isStop = currentTime == self.preTime
+                self.totalTime = self.roundToPlaces(value: self.delegate?.getTotalTime() ?? 0, places: 10)
+                self.currentTime = currentTime
+                self.preTime = currentTime
+            }
+            guard self.isStop == false else { return }
+            self.startMillisecondsHandler()
+        }
     }
 
     /// 停止
     public func stop() {
+        isStart = false
         timer.destoryAllTimer()
     }
-    
+
     public func reset() {
         stop()
         scoreView?.reset()
@@ -194,13 +206,24 @@ public class AgoraLrcScoreView: UIView {
         scoreView = nil
     }
 
-    @objc
-    private func timerHandler() {
-        let currentTime = delegate?.getPlayerCurrentTime() ?? 0
-        lrcView?.start(currentTime: currentTime)
-        let totalTime = delegate?.getTotalTime() ?? 0
-        scoreView?.start(currentTime: currentTime,
+    private func startMillisecondsHandler() {
+        currentTime += 0.010
+        timerHandler(time: currentTime)
+        guard statckView.arrangedSubviews.isEmpty else { return }
+        updateUI()
+        config.scoreConfig = config.scoreConfig
+        config.lrcConfig = config.lrcConfig
+    }
+
+    private func timerHandler(time: TimeInterval) {
+        lrcView?.start(currentTime: time)
+        scoreView?.start(currentTime: time,
                          totalTime: totalTime)
+    }
+
+    private func roundToPlaces(value: Double, places: Int) -> Double {
+        let divisor = pow(10.0, Double(places))
+        return round(value * divisor) / divisor
     }
 
     private func setupBackgroundImage() {
@@ -216,14 +239,14 @@ public class AgoraLrcScoreView: UIView {
     private func setupUI() {
         statckView.translatesAutoresizingMaskIntoConstraints = false
         addSubview(statckView)
-        
+
         statckView.leadingAnchor.constraint(equalTo: leadingAnchor).isActive = true
         statckView.topAnchor.constraint(equalTo: topAnchor).isActive = true
         statckView.trailingAnchor.constraint(equalTo: trailingAnchor).isActive = true
         statckView.bottomAnchor.constraint(equalTo: bottomAnchor).isActive = true
         updateUI()
     }
-    
+
     private func updateUI() {
         scoreView?.translatesAutoresizingMaskIntoConstraints = false
         statckView.addArrangedSubview(scoreView!)

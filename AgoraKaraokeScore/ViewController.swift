@@ -74,6 +74,7 @@ class ViewController: UIViewController {
 //        lrcScoreView.setLrcUrl(url: "https://webdemo.agora.io/ktv/005.xml")
 //        lrcScoreView.setLrcUrl(url: "https://github.com/cleven1/KTVLrcScore/blob/main/005.xml")
         lrcScoreView.setLrcUrl(url: "https://webdemo.agora.io/ktv/005.xml")
+//        lrcScoreView.setLrcUrl(url: "https://accktv.sd-rtn.com/202202251412/2b57c52b1e6878d1fd40e68dcd016388/release/lyric/zip_utf8/1/06fc83878ca54245855fdf5c0f9ddb25.zip")
     }
     
     private var audioPlayer: AVAudioPlayer?

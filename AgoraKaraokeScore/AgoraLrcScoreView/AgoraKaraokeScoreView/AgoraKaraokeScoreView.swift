@@ -128,7 +128,7 @@ class AgoraKaraokeScoreView: UIView {
     
     func start(currentTime: TimeInterval, totalTime: TimeInterval) {
         self.currentTime = currentTime
-        guard currentTime > 0 else { return }
+        guard currentTime > 0, totalTime > 0 else { return }
         if isInsertEnd == false {
             guard let model = insertEndLrcData(lrcData: lrcSentence, totalTime: totalTime) else { return }
             dataArray?.append(model)
@@ -225,7 +225,7 @@ class AgoraKaraokeScoreView: UIView {
 
     private func calcuToWidth(time: TimeInterval) -> CGFloat {
         let w = scoreConfig.lineWidht * time
-        return w.isNaN ? 0 : w
+        return w.isNaN ? 0 : abs(w)
     }
 
     private func createScoreData(data: [AgoraMiguLrcSentence]?) {
