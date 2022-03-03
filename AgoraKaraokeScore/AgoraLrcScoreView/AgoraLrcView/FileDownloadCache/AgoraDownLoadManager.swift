@@ -26,6 +26,10 @@ class AgoraDownLoadManager {
         let fileName = urlString.fileName.components(separatedBy: ".").first ?? ""
         let xmlPath = AgoraCacheFileHandle.cacheFileExists(with: fileName + ".xml")
         let lrcPath = AgoraCacheFileHandle.cacheFileExists(with: urlString)
+        if urlString.hasSuffix(".xml") && xmlPath == nil {
+            parseXml(path: urlString, completion: completion)
+            return
+        }
         if xmlPath != nil {
             parseXml(path: xmlPath ?? "", completion: completion)
         } else if lrcPath == nil {
@@ -90,6 +94,7 @@ class AgoraDownLoadManager {
             self.delegate?.parseLrcFinished?()
         }
     }
+
     private func parseLrc(path: String, completion: @escaping ([AgoraLrcModel]?) -> Void) {
         let lyric = AgoraLrcParse()
         let string = try? String(contentsOfFile: path)

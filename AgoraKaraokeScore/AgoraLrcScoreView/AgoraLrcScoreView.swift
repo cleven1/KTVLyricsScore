@@ -7,7 +7,7 @@
 
 import UIKit
 
-@objc
+@objc(AgoraLrcViewDelegate)
 public
 protocol AgoraLrcViewDelegate {
     /// 当前播放器的时间 单位: 秒
@@ -23,7 +23,7 @@ protocol AgoraLrcViewDelegate {
     optional func currentPlayerLrc(lrc: String, progress: CGFloat)
 }
 
-@objc
+@objc(AgoraLrcDownloadDelegate)
 public
 protocol AgoraLrcDownloadDelegate {
     /// 开始下载
@@ -49,6 +49,7 @@ protocol AgoraLrcDownloadDelegate {
     optional func parseLrcFinished()
 }
 
+@objcMembers
 public class AgoraLrcScoreView: UIView {
     /// 配置
     public var config: AgoraLrcScoreConfigModel = .init() {
