@@ -7,7 +7,8 @@
 
 import UIKit
 
-public struct AgoraLrcScoreConfigModel {
+@objcMembers
+public class AgoraLrcScoreConfigModel: NSObject {
     /// 评分组件配置
     public var scoreConfig: AgoraScoreItemConfigModel = .init()
     /// 歌词组件配置

@@ -223,7 +223,7 @@ class AgoraLrcView: UIView {
         loadView.isHidden = lrcConfig.isHiddenWatitingView
         tableView.isScrollEnabled = lrcConfig.isDrag
         gradientLayer.locations = lrcConfig.bottomMaskLocations
-        gradientLayer.colors = lrcConfig.bottomMaskColors
+        gradientLayer.colors = lrcConfig.bottomMaskColors.map({ $0.cgColor })
         gradientLayer.isHidden = lrcConfig.isHiddenBottomMask
     }
 
