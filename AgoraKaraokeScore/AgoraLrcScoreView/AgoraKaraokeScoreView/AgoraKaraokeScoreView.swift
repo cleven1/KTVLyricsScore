@@ -144,6 +144,10 @@ class AgoraKaraokeScoreView: UIView {
         collectionView.setContentOffset(CGPoint(x: pointX, y: 0),
                                         animated: false)
     }
+    func scrollToTop(animation: Bool = false) {
+        guard !collectionView.visibleCells.isEmpty else { return }
+        collectionView.scrollToItem(at: IndexPath(item: 0, section: 0), at: .top, animated: animation)
+    }
 
     public func setVoicePitch(_ voicePitch: [Double]) {
         calcuSongScore(pitch: voicePitch.last ?? 0)

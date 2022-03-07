@@ -19,8 +19,25 @@
         lrcScoreView.config.scoreConfig.scoreViewHeight = 100
         lrcScoreView.config.scoreConfig.emitterColors = [.systemPink]
         lrcScoreView.config.lrcConfig.lrcFontSize = .systemFont(ofSize: 15)
+        // 滚到顶部
+        lrcScoreView.scrollToTop()
+        // 设置代理
+        lrcScoreView.downloadDelegate = self
+        lrcScoreView.scoreDelegate = self
         return lrcScoreView
     }()
+```
+#####  添加歌词URL
+```
+    lrcScoreView.setLrcUrl(url: "https://")
+    /// 开始滚动歌词
+    lrcScoreView.start()
+```
+
+
+#####  清除缓存
+```
+    AgoraLrcScoreView.cleanCache()
 ```
 
 <br/>

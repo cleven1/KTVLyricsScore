@@ -171,6 +171,12 @@ public class AgoraLrcScoreView: UIView {
     public func setVoicePitch(_ voicePitch: [Double]) {
         scoreView?.setVoicePitch(voicePitch)
     }
+    
+    /// 滚到顶部
+    public func scrollToTop(animation: Bool = false) {
+        lrcView?.scrollToTop(animation: animation)
+        scoreView?.scrollToTop(animation: animation)
+    }
 
     private var preTime: TimeInterval = 0
     private var isStop: Bool = false
