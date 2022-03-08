@@ -204,6 +204,7 @@ public class AgoraLrcScoreView: UIView {
     }
 
     public func reset() {
+        resetTime()
         stop()
         scoreView?.reset()
         lrcView?.reset()
@@ -211,6 +212,11 @@ public class AgoraLrcScoreView: UIView {
         lrcView = nil
         scoreView?.removeFromSuperview()
         scoreView = nil
+    }
+    
+    public func resetTime() {
+        preTime = 0
+        currentTime = 0
     }
 
     private func startMillisecondsHandler() {
