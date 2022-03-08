@@ -31,9 +31,17 @@ class AgoraKaraokeScoreView: UIView {
     }
 
     /// 线的配置
-    public var scoreConfig: AgoraScoreItemConfigModel = .init() {
+    private var _scoreConfig: AgoraScoreItemConfigModel = .init() {
         didSet {
             updateUI()
+        }
+    }
+    public var scoreConfig: AgoraScoreItemConfigModel? {
+        set {
+            _scoreConfig = newValue ?? AgoraScoreItemConfigModel()
+        }
+        get {
+            return _scoreConfig
         }
     }
 
@@ -123,7 +131,7 @@ class AgoraKaraokeScoreView: UIView {
     }
 
     func reset() {
-        currentScore = scoreConfig.defaultScore
+        currentScore = _scoreConfig.defaultScore
         currentTime = 0
         isInsertEnd = false
     }
@@ -159,7 +167,7 @@ class AgoraKaraokeScoreView: UIView {
         guard let model = dataArray?.first(where: { time >= $0.startTime * 1000 && $0.endTime * 1000 >= time }), model.isEmptyCell == false
         else {
             isDrawingCell = false
-            cursorAnimation(y: scoreConfig.scoreViewHeight - scoreConfig.cursorHeight * 0.5, isDraw: false)
+            cursorAnimation(y: _scoreConfig.scoreViewHeight - _scoreConfig.cursorHeight * 0.5, isDraw: false)
             triangleView.updateAlpha(at: 0)
             return
         }
@@ -167,7 +175,7 @@ class AgoraKaraokeScoreView: UIView {
         let y = pitchToY(min: model.pitchMin, max: model.pitchMax, pitch)
 
         // 计算线的中心位置
-        let lineCenterY = (model.topKM + scoreConfig.lineHeight) - scoreConfig.lineHeight * 0.5
+        let lineCenterY = (model.topKM + _scoreConfig.lineHeight) - _scoreConfig.lineHeight * 0.5
         var score = 100 - abs(y - lineCenterY)
         score = score > 100 ? 100 : score < 0 ? 0 : score
         var addScore: Double = 0
@@ -203,7 +211,7 @@ class AgoraKaraokeScoreView: UIView {
     }
 
     private func cursorAnimation(y: CGFloat, isDraw: Bool) {
-        cursorTopCons?.constant = y - scoreConfig.cursorHeight * 0.5
+        cursorTopCons?.constant = y - _scoreConfig.cursorHeight * 0.5
         cursorTopCons?.isActive = true
         if isDraw {
             isDrawingCell = true
@@ -225,13 +233,13 @@ class AgoraKaraokeScoreView: UIView {
     }
 
     private func pitchToY(min: CGFloat, max: CGFloat, _ value: CGFloat) -> CGFloat {
-        let viewH = scoreConfig.scoreViewHeight - scoreConfig.lineHeight
+        let viewH = _scoreConfig.scoreViewHeight - _scoreConfig.lineHeight
         let y = viewH - (viewH / (max - min) * (value - min))
         return y.isNaN ? 0 : y
     }
 
     private func calcuToWidth(time: TimeInterval) -> CGFloat {
-        let w = scoreConfig.lineWidht * time
+        let w = _scoreConfig.lineWidht * time
         return w.isNaN ? 0 : abs(w)
     }
 
@@ -328,7 +336,7 @@ class AgoraKaraokeScoreView: UIView {
         collectionView.trailingAnchor.constraint(equalTo: trailingAnchor).isActive = true
         collectionView.bottomAnchor.constraint(equalTo: bottomAnchor).isActive = true
 
-        verticalLineLeadingCons = separatorVerticalLine.leadingAnchor.constraint(equalTo: leadingAnchor, constant: scoreConfig.innerMargin)
+        verticalLineLeadingCons = separatorVerticalLine.leadingAnchor.constraint(equalTo: leadingAnchor, constant: _scoreConfig.innerMargin)
         verticalLineLeadingCons?.isActive = true
         separatorVerticalLine.bottomAnchor.constraint(equalTo: bottomAnchor).isActive = true
         separatorVerticalLine.topAnchor.constraint(equalTo: topAnchor).isActive = true
@@ -343,9 +351,9 @@ class AgoraKaraokeScoreView: UIView {
         separatorBottomLine.trailingAnchor.constraint(equalTo: trailingAnchor).isActive = true
         separatorBottomLine.heightAnchor.constraint(equalToConstant: 1).isActive = true
         cursorView.centerXAnchor.constraint(equalTo: separatorVerticalLine.centerXAnchor).isActive = true
-        cursorTopCons = cursorView.topAnchor.constraint(equalTo: separatorVerticalLine.topAnchor, constant: scoreConfig.scoreViewHeight - scoreConfig.cursorHeight)
-        cursorView.widthAnchor.constraint(equalToConstant: scoreConfig.cursorWidth).isActive = true
-        cursorView.heightAnchor.constraint(equalToConstant: scoreConfig.cursorHeight).isActive = true
+        cursorTopCons = cursorView.topAnchor.constraint(equalTo: separatorVerticalLine.topAnchor, constant: _scoreConfig.scoreViewHeight - _scoreConfig.cursorHeight)
+        cursorView.widthAnchor.constraint(equalToConstant: _scoreConfig.cursorWidth).isActive = true
+        cursorView.heightAnchor.constraint(equalToConstant: _scoreConfig.cursorHeight).isActive = true
         cursorTopCons?.isActive = true
 
         triangleView.trailingAnchor.constraint(equalTo: cursorView.leadingAnchor, constant: 1).isActive = true
@@ -357,22 +365,22 @@ class AgoraKaraokeScoreView: UIView {
     }
 
     private func updateUI() {
-        triangleView.config = scoreConfig
-        emitterView.config = scoreConfig
-        emitterView.isHidden = scoreConfig.isHiddenEmitterView
-        cursorView.layer.cornerRadius = scoreConfig.cursorHeight * 0.5
-        cursorView.backgroundColor = scoreConfig.cursorColor
-        separatorTopLine.backgroundColor = scoreConfig.separatorLineColor
-        separatorBottomLine.backgroundColor = scoreConfig.separatorLineColor
-        separatorVerticalLine.backgroundColor = scoreConfig.separatorLineColor
-        separatorTopLine.isHidden = scoreConfig.isHiddenSeparatorLine
-        separatorBottomLine.isHidden = scoreConfig.isHiddenSeparatorLine
-        separatorVerticalLine.isHidden = scoreConfig.isHiddenVerticalSeparatorLine
-        verticalLineLeadingCons?.constant = scoreConfig.innerMargin
+        triangleView.config = _scoreConfig
+        emitterView.config = _scoreConfig
+        emitterView.isHidden = _scoreConfig.isHiddenEmitterView
+        cursorView.layer.cornerRadius = _scoreConfig.cursorHeight * 0.5
+        cursorView.backgroundColor = _scoreConfig.cursorColor
+        separatorTopLine.backgroundColor = _scoreConfig.separatorLineColor
+        separatorBottomLine.backgroundColor = _scoreConfig.separatorLineColor
+        separatorVerticalLine.backgroundColor = _scoreConfig.separatorLineColor
+        separatorTopLine.isHidden = _scoreConfig.isHiddenSeparatorLine
+        separatorBottomLine.isHidden = _scoreConfig.isHiddenSeparatorLine
+        separatorVerticalLine.isHidden = _scoreConfig.isHiddenVerticalSeparatorLine
+        verticalLineLeadingCons?.constant = _scoreConfig.innerMargin
         verticalLineLeadingCons?.isActive = true
-        cursorTopCons?.constant = scoreConfig.scoreViewHeight - scoreConfig.cursorHeight
+        cursorTopCons?.constant = _scoreConfig.scoreViewHeight - _scoreConfig.cursorHeight
         cursorTopCons?.isActive = true
-        currentScore = scoreConfig.defaultScore
+        currentScore = _scoreConfig.defaultScore
     }
 }
 
@@ -384,13 +392,13 @@ extension AgoraKaraokeScoreView: UICollectionViewDataSource, UICollectionViewDel
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "AgoraKaraokeScoreCell", for: indexPath) as! AgoraKaraokeScoreCell
         let model = dataArray?[indexPath.item]
-        cell.setScore(with: model, config: scoreConfig)
+        cell.setScore(with: model, config: _scoreConfig)
         return cell
     }
 
     func collectionView(_: UICollectionView, layout _: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         CGSize(width: dataArray?[indexPath.item].widthKM ?? 0,
-               height: scoreConfig.scoreViewHeight)
+               height: _scoreConfig.scoreViewHeight)
     }
 
     func collectionView(_: UICollectionView, layout _: UICollectionViewLayout, minimumLineSpacingForSectionAt _: Int) -> CGFloat {
@@ -402,7 +410,7 @@ extension AgoraKaraokeScoreView: UICollectionViewDataSource, UICollectionViewDel
     }
 
     func collectionView(_: UICollectionView, layout _: UICollectionViewLayout, insetForSectionAt _: Int) -> UIEdgeInsets {
-        UIEdgeInsets(top: 0, left: scoreConfig.innerMargin, bottom: 0, right: frame.width - scoreConfig.innerMargin)
+        UIEdgeInsets(top: 0, left: _scoreConfig.innerMargin, bottom: 0, right: frame.width - _scoreConfig.innerMargin)
     }
 
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
@@ -420,7 +428,7 @@ extension AgoraKaraokeScoreView: UICollectionViewDataSource, UICollectionViewDel
             } else if moveX <= model.leftKM {
                 model.status = .`init`
             }
-            cell?.setScore(with: model, config: scoreConfig)
+            cell?.setScore(with: model, config: _scoreConfig)
         }
     }
 }

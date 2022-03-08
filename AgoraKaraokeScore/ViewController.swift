@@ -11,10 +11,18 @@ import AVFoundation
 class ViewController: UIViewController {
     private lazy var lrcScoreView: AgoraLrcScoreView = {
         let lrcScoreView = AgoraLrcScoreView(delegate: self)
-        lrcScoreView.config.scoreConfig.scoreViewHeight = 100
-        lrcScoreView.config.scoreConfig.emitterColors = [.systemPink]
-        lrcScoreView.config.lrcConfig.lrcFontSize = .systemFont(ofSize: 15)
-        lrcScoreView.config.scoreConfig.tailAnimateColor = .yellow
+        let config = AgoraLrcScoreConfigModel()
+        config.isHiddenScoreView = true
+        let scoreConfig = AgoraScoreItemConfigModel()
+        scoreConfig.tailAnimateColor = .yellow
+        scoreConfig.scoreViewHeight = 100
+        scoreConfig.emitterColors = [.systemPink]
+        config.scoreConfig = scoreConfig
+        let lrcConfig = AgoraLrcConfigModel()
+        lrcConfig.lrcFontSize = .systemFont(ofSize: 15)
+        lrcConfig.isHiddenWatitingView = true
+        config.lrcConfig = lrcConfig
+        lrcScoreView.config = config
         return lrcScoreView
     }()
     
@@ -67,6 +75,9 @@ class ViewController: UIViewController {
         
         setupPlayer()
         createData()
+        let lrcConfig = lrcScoreView.config?.lrcConfig
+        lrcConfig?.tipsString = "测试"
+        lrcScoreView.updateLrcConfig = lrcConfig
     }
     
     private func createData() {

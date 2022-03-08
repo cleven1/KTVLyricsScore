@@ -12,10 +12,18 @@ class AgoraLrcView: UIView {
     var seekToTime: ((TimeInterval) -> Void)?
     /// 当前播放的歌词
     var currentPlayerLrc: ((String, CGFloat) -> Void)?
-
-    var lrcConfig: AgoraLrcConfigModel = .init() {
+    
+    private var _lrcConfig: AgoraLrcConfigModel = .init() {
         didSet {
             updateUI()
+        }
+    }
+    var lrcConfig: AgoraLrcConfigModel? {
+        set {
+            _lrcConfig = newValue ?? AgoraLrcConfigModel()
+        }
+        get {
+            return _lrcConfig
         }
     }
 
@@ -120,7 +128,7 @@ class AgoraLrcView: UIView {
 
     private var isDragging: Bool = false {
         didSet {
-            lineView.isHidden = lrcConfig.isHiddenSeparator || !isDragging
+            lineView.isHidden = _lrcConfig.isHiddenSeparator || !isDragging
         }
     }
 
@@ -130,7 +138,7 @@ class AgoraLrcView: UIView {
         super.init(frame: frame)
         setupUI()
     }
-
+    
     @available(*, unavailable)
     required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
@@ -147,7 +155,7 @@ class AgoraLrcView: UIView {
         gradientLayer.frame = CGRect(x: 0,
                                      y: 0,
                                      width: bounds.width,
-                                     height: lrcConfig.bottomMaskHeight > 0 ? lrcConfig.bottomMaskHeight : bounds.height)
+                                     height: _lrcConfig.bottomMaskHeight > 0 ? _lrcConfig.bottomMaskHeight : bounds.height)
         tableView.superview?.layer.addSublayer(gradientLayer)
     }
 
@@ -215,16 +223,16 @@ class AgoraLrcView: UIView {
     }
 
     private func updateUI() {
-        tipsLabel.text = lrcConfig.tipsString
-        tipsLabel.textColor = lrcConfig.tipsColor
-        tipsLabel.font = lrcConfig.tipsFont
-        lineView.backgroundColor = lrcConfig.separatorLineColor
-        loadView.lrcConfig = lrcConfig
-        loadView.isHidden = lrcConfig.isHiddenWatitingView
-        tableView.isScrollEnabled = lrcConfig.isDrag
-        gradientLayer.locations = lrcConfig.bottomMaskLocations
-        gradientLayer.colors = lrcConfig.bottomMaskColors.map({ $0.cgColor })
-        gradientLayer.isHidden = lrcConfig.isHiddenBottomMask
+        tipsLabel.text = _lrcConfig.tipsString
+        tipsLabel.textColor = _lrcConfig.tipsColor
+        tipsLabel.font = _lrcConfig.tipsFont
+        lineView.backgroundColor = _lrcConfig.separatorLineColor
+        loadView.lrcConfig = _lrcConfig
+        loadView.isHidden = _lrcConfig.isHiddenWatitingView
+        tableView.isScrollEnabled = _lrcConfig.isDrag
+        gradientLayer.locations = _lrcConfig.bottomMaskLocations
+        gradientLayer.colors = _lrcConfig.bottomMaskColors.map({ $0.cgColor })
+        gradientLayer.isHidden = _lrcConfig.isHiddenBottomMask
     }
 
     // MARK: - 更新歌词的时间
@@ -326,7 +334,7 @@ extension AgoraLrcView: UITableViewDataSource, UITableViewDelegate {
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "AgoaraLrcViewCell", for: indexPath) as! AgoraMusicLrcCell
-        cell.lrcConfig = lrcConfig
+        cell.lrcConfig = _lrcConfig
         let lrcModel = dataArray?[indexPath.row]
         if lrcModel is AgoraMiguLrcSentence {
             cell.setupMusicXmlLrc(with: lrcModel as? AgoraMiguLrcSentence, progress: 0)
