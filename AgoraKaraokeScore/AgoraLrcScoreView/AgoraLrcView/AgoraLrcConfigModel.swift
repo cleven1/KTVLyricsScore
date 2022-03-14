@@ -7,6 +7,7 @@
 
 import UIKit
 
+@objcMembers
 public class AgoraLrcConfigModel: NSObject {
     /// 无歌词提示文案
     public var tipsString: String = "纯音乐，无歌词"

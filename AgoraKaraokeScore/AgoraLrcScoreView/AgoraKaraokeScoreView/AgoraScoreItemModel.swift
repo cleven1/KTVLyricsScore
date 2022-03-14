@@ -40,6 +40,7 @@ class AgoraScoreItemModel: NSObject {
     var pitchMax: CGFloat = 0
 }
 
+@objcMembers
 public class AgoraScoreItemConfigModel: NSObject {
     /// 评分视图高度 默认:100
     public var scoreViewHeight: CGFloat = 100
