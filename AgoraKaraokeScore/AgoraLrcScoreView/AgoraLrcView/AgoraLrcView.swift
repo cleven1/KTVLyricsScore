@@ -58,7 +58,7 @@ class AgoraLrcView: UIView {
     private var scrollRow: Int = -1 {
         didSet {
             if scrollRow == oldValue { return }
-            if preRow > -1 {
+            if preRow > -1 && (dataArray?.count ?? 0) > 0 {
                 UIView.performWithoutAnimation {
                     tableView.reloadRows(at: [IndexPath(row: preRow, section: 0)], with: .fade)
                 }
@@ -219,7 +219,7 @@ class AgoraLrcView: UIView {
     }
     
     func scrollToTime(timestamp: TimeInterval) {
-        currentTime = timestamp * 1000
+        currentTime = timestamp
         updatePerSecond()
     }
 

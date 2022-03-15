@@ -200,7 +200,8 @@ public class AgoraLrcScoreView: UIView {
     
     /// 根据时间滚到指定位置
     public func scrollToTime(timestamp: TimeInterval) {
-        lrcView?.scrollToTime(timestamp: timestamp)
+        lrcView?.scrollToTime(timestamp: timestamp * 1000)
+        scoreView?.start(currentTime: timestamp * 1000, totalTime: totalTime)
     }
 
     private var preTime: TimeInterval = 0
