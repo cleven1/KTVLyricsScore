@@ -219,7 +219,7 @@ class AgoraLrcView: UIView {
     }
     
     func scrollToTime(timestamp: TimeInterval) {
-        currentTime = timestamp
+        currentTime = timestamp * 1000
         updatePerSecond()
     }
 
