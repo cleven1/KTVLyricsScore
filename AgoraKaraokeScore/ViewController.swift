@@ -31,7 +31,16 @@ class ViewController: UIViewController {
         button.setTitle("播放", for: .normal)
         button.setTitleColor(.blue, for: .normal)
         button.titleLabel?.font = .systemFont(ofSize: 15)
-        button.addTarget(self, action: #selector(clickResetButton), for: .touchUpInside)
+        button.addTarget(self, action: #selector(clickResetButton(sender:)), for: .touchUpInside)
+        return button
+    }()
+    
+    private lazy var scrollButton: UIButton = {
+        let button = UIButton()
+        button.setTitle("滚动", for: .normal)
+        button.setTitleColor(.systemPink, for: .normal)
+        button.titleLabel?.font = .systemFont(ofSize: 15)
+        button.addTarget(self, action: #selector(clickScrollButton), for: .touchUpInside)
         return button
     }()
     private lazy var scoreLabel: UILabel = {
@@ -53,6 +62,7 @@ class ViewController: UIViewController {
         resetButton.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(lrcScoreView)
         view.addSubview(resetButton)
+        view.addSubview(scrollButton)
         lrcScoreView.downloadDelegate = self
         lrcScoreView.scoreDelegate = self
         lrcScoreView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
@@ -72,6 +82,12 @@ class ViewController: UIViewController {
         view.addSubview(scoreLabel)
         scoreLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20).isActive = true
         scoreLabel.topAnchor.constraint(equalTo: lrcScoreView.topAnchor, constant: 40).isActive = true
+        
+        scrollButton.translatesAutoresizingMaskIntoConstraints = false
+        scrollButton.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        scrollButton.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
+        scrollButton.widthAnchor.constraint(equalToConstant: 60).isActive = true
+        scrollButton.heightAnchor.constraint(equalToConstant: 40).isActive = true
         
         setupPlayer()
         createData()
@@ -108,14 +124,25 @@ class ViewController: UIViewController {
     
     
     @objc
-    private func clickResetButton() {
+    private func clickResetButton(sender: UIButton) {
 //        audioPlayer?.prepareToPlay()
-        audioPlayer?.play()
-        lrcScoreView.start()
-        
+        sender.isSelected = !sender.isSelected
+        if sender.isSelected {
+            audioPlayer?.play()
+            lrcScoreView.start()
+        } else {
+            audioPlayer?.stop()
+            lrcScoreView.stop()
+        }
+
         timer.scheduledMillisecondsTimer(withName: "aaa", countDown: 10000000, milliseconds: 200, queue: .main) { [weak self] _, duration in
             self?.setupTimer()
         }
+    }
+    
+    @objc
+    private func clickScrollButton() {
+        lrcScoreView.scrollToTime(timestamp: 159431.4285713993)
     }
     
     private func setupTimer() {

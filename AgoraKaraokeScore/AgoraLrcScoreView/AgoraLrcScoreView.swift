@@ -180,7 +180,7 @@ public class AgoraLrcScoreView: UIView {
                 self.lrcView?.lrcDatas = lryic as? [AgoraLrcModel]
             }
             self.scoreView?.isHidden = self._config.isHiddenScoreView || lryic is [AgoraLrcModel]
-            if let senences = lryic as? AgoraMiguSongLyric {
+            if let senences = lryic as? AgoraMiguSongLyric, self.scoreView?.isHidden == false {
                 self.scoreView?.lrcSentence = senences.sentences
             }
             self.downloadDelegate?.downloadLrcFinished?(url: url)
@@ -196,6 +196,11 @@ public class AgoraLrcScoreView: UIView {
     public func scrollToTop(animation: Bool = false) {
         lrcView?.scrollToTop(animation: animation)
         scoreView?.scrollToTop(animation: animation)
+    }
+    
+    /// 根据时间滚到指定位置
+    public func scrollToTime(timestamp: TimeInterval) {
+        lrcView?.scrollToTime(timestamp: timestamp)
     }
 
     private var preTime: TimeInterval = 0

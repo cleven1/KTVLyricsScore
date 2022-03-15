@@ -215,6 +215,11 @@ class AgoraLrcView: UIView {
         guard !tableView.visibleCells.isEmpty else { return }
         tableView.scrollToRow(at: IndexPath(row: 0, section: 0), at: .top, animated: animation)
     }
+    
+    func scrollToTime(timestamp: TimeInterval) {
+        currentTime = timestamp
+        updatePerSecond()
+    }
 
     func reset() {
         currentTime = 0
