@@ -146,7 +146,7 @@ class AgoraLrcView: UIView {
 
     override func layoutSubviews() {
         super.layoutSubviews()
-        let margin = tableView.frame.height * 0.5
+        let margin = statckView.frame.height * 0.5
         tableView.contentInset = UIEdgeInsets(top: 0,
                                               left: 0,
                                               bottom: margin,
@@ -158,7 +158,7 @@ class AgoraLrcView: UIView {
                                      height: _lrcConfig.bottomMaskHeight > 0 ? _lrcConfig.bottomMaskHeight : bounds.height)
         tableView.superview?.layer.addSublayer(gradientLayer)
     }
-
+    
     private func setupUI() {
         backgroundColor = .clear
         statckView.translatesAutoresizingMaskIntoConstraints = false
@@ -186,6 +186,8 @@ class AgoraLrcView: UIView {
         lineView.centerYAnchor.constraint(equalTo: tableView.centerYAnchor).isActive = true
 
         updateUI()
+        
+        layoutIfNeeded()
     }
 
     private var preTime: TimeInterval = 0
