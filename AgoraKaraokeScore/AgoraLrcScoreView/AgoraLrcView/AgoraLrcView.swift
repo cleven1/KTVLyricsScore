@@ -12,6 +12,8 @@ class AgoraLrcView: UIView {
     var seekToTime: ((TimeInterval) -> Void)?
     /// 当前播放的歌词
     var currentPlayerLrc: ((String, CGFloat) -> Void)?
+    /// 当前歌词pitch回调
+    var currentWordPitchClosure: ((Int, Int) -> Void)?
     
     private var _lrcConfig: AgoraLrcConfigModel = .init() {
         didSet {
@@ -30,6 +32,9 @@ class AgoraLrcView: UIView {
     var miguSongModel: AgoraMiguSongLyric? {
         didSet {
             dataArray = miguSongModel?.sentences
+            // 计算总pitch数量
+            totalPitchCount = miguSongModel?.sentences
+                .flatMap({ $0.tones }).filter({ $0.pitch > 0 }).count ?? 0
         }
     }
 
@@ -94,6 +99,8 @@ class AgoraLrcView: UIView {
         tableView.separatorStyle = .none
         tableView.backgroundColor = .clear
         tableView.scrollsToTop = false
+        tableView.estimatedRowHeight = 30
+        tableView.rowHeight = UITableView.automaticDimension
         tableView.setContentCompressionResistancePriority(.defaultHigh, for: .vertical)
         tableView.register(AgoraMusicLrcCell.self, forCellReuseIdentifier: "AgoaraLrcViewCell")
         return tableView
@@ -133,6 +140,7 @@ class AgoraLrcView: UIView {
     }
 
     private var currentTime: TimeInterval = 0
+    private var totalPitchCount: Int = 0
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -243,7 +251,9 @@ class AgoraLrcView: UIView {
     }
 
     // MARK: - 更新歌词的时间
-
+    private var preWord: String?
+    private var prePitch: Int = 0
+    private var preIndex: Int = 0
     private func updatePerSecond() {
         if lrcDatas != nil {
             if let lrc = getLrc() {
@@ -257,6 +267,15 @@ class AgoraLrcView: UIView {
             scrollRow = lrc.index ?? 0
             progress = lrc.progress ?? 0
             currentPlayerLrc?(lrc.lrcText ?? "", progress)
+            if preIndex != scrollRow {
+                currentWordPitchClosure?(lrc.pitch, totalPitchCount)
+                
+            } else if (preWord != lrc.lrcText || prePitch != lrc.pitch) {
+                currentWordPitchClosure?(lrc.pitch, totalPitchCount)
+            }
+            preWord = lrc.lrcText
+            prePitch = lrc.pitch
+            preIndex = scrollRow
         }
     }
 
@@ -265,7 +284,7 @@ class AgoraLrcView: UIView {
     // 获取xml类型的歌词信息
     private func getXmlLrc() -> (index: Int?,
                                  lrcText: String?,
-                                 progress: CGFloat?)?
+                                 progress: CGFloat?, pitch: Int)?
     {
         guard let lrcArray = miguSongModel?.sentences,
               !lrcArray.isEmpty else { return nil }
@@ -289,8 +308,9 @@ class AgoraLrcView: UIView {
                currentTime < nextStartTime
             {
                 i = index
-                progress = currentLrc.getProgress(with: currentTime)
-                return (i, currentLrc.toSentence(), progress)
+                let (wordProgress, pitch) = currentLrc.getProgress(with: currentTime)
+                progress = wordProgress
+                return (i, currentLrc.toSentence(), progress, pitch)
             }
         }
         return nil

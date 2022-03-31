@@ -18,12 +18,19 @@ class AgoraMusicLrcCell: UITableViewCell {
         label.numberOfLines = 0
         return label
     }()
+    
+    private var topCons: NSLayoutConstraint?
+    private var bottomCons: NSLayoutConstraint?
 
     var lrcConfig: AgoraLrcConfigModel? {
         didSet {
             lrcLabel.textColor = lrcConfig?.lrcNormalColor
             lrcLabel.lrcDrawingColor = lrcConfig?.lrcDrawingColor
             lrcLabel.font = lrcConfig?.lrcFontSize
+            topCons?.constant = lrcConfig?.lrcTopAndBottomMargin ?? 10
+            bottomCons?.constant = -(lrcConfig?.lrcTopAndBottomMargin ?? 10)
+            topCons?.isActive = true
+            bottomCons?.isActive = true
         }
     }
 
@@ -80,8 +87,10 @@ class AgoraMusicLrcCell: UITableViewCell {
         lrcLabel.translatesAutoresizingMaskIntoConstraints = false
         contentView.addSubview(lrcLabel)
         lrcLabel.centerXAnchor.constraint(equalTo: contentView.centerXAnchor).isActive = true
-        lrcLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 10).isActive = true
-        lrcLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -10).isActive = true
+        topCons = lrcLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 10)
+        bottomCons = lrcLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -10)
+        topCons?.isActive = true
+        bottomCons?.isActive = true
     }
 
     override func layoutSubviews() {

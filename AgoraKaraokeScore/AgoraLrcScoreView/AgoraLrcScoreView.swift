@@ -21,6 +21,9 @@ protocol AgoraLrcViewDelegate {
     /// 当前正在播放的歌词和进度
     @objc
     optional func currentPlayerLrc(lrc: String, progress: CGFloat)
+    /// 歌词pitch回调
+    @objc
+    optional func agoraWordPitch(pitch: Int, totalCount: Int)
 }
 
 @objc(AgoraLrcDownloadDelegate)
@@ -106,7 +109,7 @@ public class AgoraLrcScoreView: UIView {
     }
 
     /// 是否开始
-    public var isStart: Bool = false
+    public private(set) var isStart: Bool = false
 
     private lazy var statckView: UIStackView = {
         let stackView = UIStackView()
@@ -122,6 +125,7 @@ public class AgoraLrcScoreView: UIView {
         get {
             guard _scoreView == nil else { return _scoreView }
             _scoreView = AgoraKaraokeScoreView()
+            _scoreView?.scoreConfig = config?.scoreConfig
             _scoreView?.delegate = scoreDelegate
             return _scoreView
         }
@@ -135,12 +139,17 @@ public class AgoraLrcScoreView: UIView {
         get {
             guard _lrcView == nil else { return _lrcView }
             _lrcView = AgoraLrcView()
+            _lrcView?.lrcConfig = config?.lrcConfig
             _lrcView?.seekToTime = { [weak self] time in
                 self?.delegate?.seekToTime?(time: time)
             }
             _lrcView?.currentPlayerLrc = { [weak self] lrc, progress in
                 self?.delegate?.currentPlayerLrc?(lrc: lrc,
                                                   progress: progress)
+            }
+            _lrcView?.currentWordPitchClosure = { [weak self] pitch, totalCount in
+                guard pitch > 0 else { return }
+                self?.delegate?.agoraWordPitch?(pitch: pitch, totalCount: totalCount)
             }
             return _lrcView
         }

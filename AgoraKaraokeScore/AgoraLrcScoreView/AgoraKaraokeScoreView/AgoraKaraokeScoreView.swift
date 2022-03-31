@@ -394,7 +394,8 @@ extension AgoraKaraokeScoreView: UICollectionViewDataSource, UICollectionViewDel
     }
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "AgoraKaraokeScoreCell", for: indexPath) as! AgoraKaraokeScoreCell
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "AgoraKaraokeScoreCell",
+                                                      for: indexPath) as! AgoraKaraokeScoreCell
         let model = dataArray?[indexPath.item]
         cell.setScore(with: model, config: _scoreConfig)
         return cell

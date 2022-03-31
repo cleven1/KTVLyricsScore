@@ -12,15 +12,18 @@ class ViewController: UIViewController {
     private lazy var lrcScoreView: AgoraLrcScoreView = {
         let lrcScoreView = AgoraLrcScoreView(delegate: self)
         let config = AgoraLrcScoreConfigModel()
-        config.isHiddenScoreView = false
+        config.isHiddenScoreView = true
         let scoreConfig = AgoraScoreItemConfigModel()
         scoreConfig.tailAnimateColor = .yellow
         scoreConfig.scoreViewHeight = 100
         scoreConfig.emitterColors = [.systemPink]
         config.scoreConfig = scoreConfig
         let lrcConfig = AgoraLrcConfigModel()
-        lrcConfig.lrcFontSize = .systemFont(ofSize: 15)
+        lrcConfig.lrcFontSize = .systemFont(ofSize: 12)
         lrcConfig.isHiddenWatitingView = true
+        lrcConfig.isHiddenBottomMask = true
+        lrcConfig.lrcHighlightScaleSize = 1.25
+        lrcConfig.lrcTopAndBottomMargin = 0
         config.lrcConfig = lrcConfig
         lrcScoreView.config = config
         return lrcScoreView
@@ -65,6 +68,7 @@ class ViewController: UIViewController {
         view.addSubview(scrollButton)
         lrcScoreView.downloadDelegate = self
         lrcScoreView.scoreDelegate = self
+        lrcScoreView.delegate = self
         lrcScoreView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
         lrcScoreView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor).isActive = true
         lrcScoreView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
@@ -142,7 +146,7 @@ class ViewController: UIViewController {
     
     @objc
     private func clickScrollButton() {
-        lrcScoreView.scrollToTime(timestamp: 159431.4285713993)
+        lrcScoreView.scrollToTime(timestamp: 159.4314285713993)
     }
     
     private func setupTimer() {
@@ -169,6 +173,10 @@ extension ViewController: AgoraLrcViewDelegate {
     func seekToTime(time: TimeInterval) {
         audioPlayer?.currentTime = time
     }
+
+    func agoraWordPitch(pitch: Int, totalCount: Int) {
+        print("pitch === \(pitch)  totalCount == \(totalCount)")
+    }
 }
 
 extension ViewController: AgoraLrcDownloadDelegate {
@@ -188,3 +196,4 @@ extension ViewController: AgoraKaraokeScoreDelegate {
         scoreLabel.text = "分数: \(score) 总分: \(Int(totalScore))"
     }
 }
+

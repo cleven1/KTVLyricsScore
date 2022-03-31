@@ -31,6 +31,8 @@ public class AgoraLrcConfigModel: NSObject {
     public var lrcHighlightScaleSize: Double = 1.1
     /// 歌词左右两边间距
     public var lrcLeftAndRightMargin: CGFloat = 15
+    /// 歌词上下间距
+    public var lrcTopAndBottomMargin: CGFloat = 10
     /// 是否隐藏等待开始圆点
     public var isHiddenWatitingView: Bool = false
     /// 等待开始圆点背景色 默认: 灰色
