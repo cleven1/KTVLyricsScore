@@ -19,11 +19,11 @@ class ViewController: UIViewController {
         scoreConfig.emitterColors = [.systemPink]
         config.scoreConfig = scoreConfig
         let lrcConfig = AgoraLrcConfigModel()
-        lrcConfig.lrcFontSize = .systemFont(ofSize: 12)
+        lrcConfig.lrcFontSize = .systemFont(ofSize: 15)
         lrcConfig.isHiddenWatitingView = true
         lrcConfig.isHiddenBottomMask = true
         lrcConfig.lrcHighlightScaleSize = 1.25
-        lrcConfig.lrcTopAndBottomMargin = 0
+        lrcConfig.lrcTopAndBottomMargin = 10
         config.lrcConfig = lrcConfig
         lrcScoreView.config = config
         return lrcScoreView
@@ -44,6 +44,7 @@ class ViewController: UIViewController {
         button.setTitleColor(.systemPink, for: .normal)
         button.titleLabel?.font = .systemFont(ofSize: 15)
         button.addTarget(self, action: #selector(clickScrollButton), for: .touchUpInside)
+        button.isHidden = true
         return button
     }()
     private lazy var scoreLabel: UILabel = {

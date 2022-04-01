@@ -147,6 +147,8 @@ class AgoraLrcLabel: UILabel {
             }
         }
         if let context = UIGraphicsGetCurrentContext(), !path.isEmpty {
+            context.setLineWidth(1.0)
+            context.setLineCap(.butt)
             context.addPath(path)
             context.clip()
             let _textColor = textColor
