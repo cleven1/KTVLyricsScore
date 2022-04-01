@@ -69,9 +69,10 @@ class AgoraLrcView: UIView {
                 }
             }
             let indexPath = IndexPath(row: scrollRow, section: 0)
-            tableView.scrollToRow(at: indexPath, at: .middle, animated: true)
             let cell = tableView.cellForRow(at: indexPath) as? AgoraMusicLrcCell
             cell?.setupCurrentLrcScale()
+            tableView.reloadRows(at: [indexPath], with: .none)
+            tableView.scrollToRow(at: indexPath, at: .middle, animated: true)
             preRow = scrollRow
         }
     }
@@ -363,13 +364,28 @@ extension AgoraLrcView: UITableViewDataSource, UITableViewDelegate {
         let cell = tableView.dequeueReusableCell(withIdentifier: "AgoaraLrcViewCell", for: indexPath) as! AgoraMusicLrcCell
         cell.lrcConfig = _lrcConfig
         let lrcModel = dataArray?[indexPath.row]
-        if lrcModel is AgoraMiguLrcSentence {
-            cell.setupMusicXmlLrc(with: lrcModel as? AgoraMiguLrcSentence, progress: 0)
-        } else {
-            cell.setupMusicLrc(with: lrcModel as? AgoraLrcModel, progress: 0)
-        }
-        if indexPath.row == 0, preRow < 0 {
-            cell.setupCurrentLrcScale()
+        
+        if scrollRow != indexPath.row {
+            if lrcModel is AgoraMiguLrcSentence {
+                cell.setupMusicXmlLrc(with: lrcModel as? AgoraMiguLrcSentence, progress: 0)
+            } else {
+                cell.setupMusicLrc(with: lrcModel as? AgoraLrcModel, progress: 0)
+            }
+            
+            if indexPath.row == 0, preRow < 0 {
+                if lrcModel is AgoraMiguLrcSentence {
+                    cell.setupCurrentLrcScale(text: (lrcModel as? AgoraMiguLrcSentence)?.toSentence())
+                } else {
+                    cell.setupCurrentLrcScale(text: (lrcModel as? AgoraLrcModel)?.lrc)
+                }
+            }
+            
+        } else if scrollRow > 0 {
+            if lrcModel is AgoraMiguLrcSentence {
+                cell.setupCurrentLrcScale(text: (lrcModel as? AgoraMiguLrcSentence)?.toSentence())
+            } else {
+                cell.setupCurrentLrcScale(text: (lrcModel as? AgoraLrcModel)?.lrc)
+            }
         }
         return cell
     }

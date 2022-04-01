@@ -49,11 +49,14 @@ class AgoraMusicLrcCell: UITableViewCell {
         lrcLabel.progress = progress
     }
 
-    func setupCurrentLrcScale() {
+    func setupCurrentLrcScale(text: String? = nil) {
         lrcLabel.textColor = lrcConfig?.lrcHighlightColor
+        lrcLabel.text = text
+        lrcLabel.font = lrcConfig?.lrcHighlightFontSize
         UIView.animate(withDuration: 0.25) {
-            let scale = self.lrcConfig?.lrcHighlightScaleSize ?? 0
-            self.lrcLabel.transform = CGAffineTransform(scaleX: scale, y: scale)
+            UIView.performWithoutAnimation {
+                self.contentView.layoutIfNeeded()
+            }
         }
     }
 
@@ -65,7 +68,9 @@ class AgoraMusicLrcCell: UITableViewCell {
         lrcLabel.textColor = lrcConfig?.lrcNormalColor
         lrcLabel.font = lrcConfig?.lrcFontSize
         UIView.animate(withDuration: 0.25) {
-            self.lrcLabel.transform = .identity
+            UIView.performWithoutAnimation {
+                self.contentView.layoutIfNeeded()
+            }
         }
     }
 
@@ -77,7 +82,9 @@ class AgoraMusicLrcCell: UITableViewCell {
         lrcLabel.textColor = lrcConfig?.lrcNormalColor
         lrcLabel.font = lrcConfig?.lrcFontSize
         UIView.animate(withDuration: 0.25) {
-            self.lrcLabel.transform = .identity
+            UIView.performWithoutAnimation {
+                self.contentView.layoutIfNeeded()
+            }
         }
     }
 

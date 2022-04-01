@@ -12,7 +12,7 @@ class ViewController: UIViewController {
     private lazy var lrcScoreView: AgoraLrcScoreView = {
         let lrcScoreView = AgoraLrcScoreView(delegate: self)
         let config = AgoraLrcScoreConfigModel()
-        config.isHiddenScoreView = true
+//        config.isHiddenScoreView = true
         let scoreConfig = AgoraScoreItemConfigModel()
         scoreConfig.tailAnimateColor = .yellow
         scoreConfig.scoreViewHeight = 100
@@ -22,7 +22,7 @@ class ViewController: UIViewController {
         lrcConfig.lrcFontSize = .systemFont(ofSize: 15)
         lrcConfig.isHiddenWatitingView = true
         lrcConfig.isHiddenBottomMask = true
-        lrcConfig.lrcHighlightScaleSize = 1.25
+        lrcConfig.lrcHighlightFontSize = .systemFont(ofSize: 18)
         lrcConfig.lrcTopAndBottomMargin = 10
         config.lrcConfig = lrcConfig
         lrcScoreView.config = config

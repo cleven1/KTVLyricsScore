@@ -27,8 +27,8 @@ public class AgoraLrcConfigModel: NSObject {
     public var lrcDrawingColor: UIColor = .orange
     /// 歌词文字大小 默认: 15
     public var lrcFontSize: UIFont = .systemFont(ofSize: 15)
-    /// 歌词高亮文字缩放大小 默认: 1.1
-    public var lrcHighlightScaleSize: Double = 1.1
+    /// 歌词高亮文字大小 默认: 18
+    public var lrcHighlightFontSize: UIFont = .systemFont(ofSize: 18)
     /// 歌词左右两边间距
     public var lrcLeftAndRightMargin: CGFloat = 15
     /// 歌词上下间距
