@@ -69,8 +69,6 @@ class AgoraLrcView: UIView {
                 }
             }
             let indexPath = IndexPath(row: scrollRow, section: 0)
-            let cell = tableView.cellForRow(at: indexPath) as? AgoraMusicLrcCell
-            cell?.setupCurrentLrcScale()
             tableView.reloadRows(at: [indexPath], with: .none)
             tableView.scrollToRow(at: indexPath, at: .middle, animated: true)
             preRow = scrollRow
@@ -380,7 +378,7 @@ extension AgoraLrcView: UITableViewDataSource, UITableViewDelegate {
                 }
             }
             
-        } else if scrollRow > 0 {
+        } else if scrollRow > -1 {
             if lrcModel is AgoraMiguLrcSentence {
                 cell.setupCurrentLrcScale(text: (lrcModel as? AgoraMiguLrcSentence)?.toSentence())
             } else {
