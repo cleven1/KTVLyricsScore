@@ -247,6 +247,7 @@ class AgoraLrcView: UIView {
         gradientLayer.locations = _lrcConfig.bottomMaskLocations
         gradientLayer.colors = _lrcConfig.bottomMaskColors.map({ $0.cgColor })
         gradientLayer.isHidden = _lrcConfig.isHiddenBottomMask
+        statckView.spacing = _lrcConfig.waitingViewBottomMargin
     }
 
     // MARK: - 更新歌词的时间

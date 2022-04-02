@@ -57,8 +57,8 @@ public class AgoraLrcScoreView: UIView {
     /// 配置
     private var _config: AgoraLrcScoreConfigModel = .init() {
         didSet {
-            scoreView!.scoreConfig = _config.scoreConfig
-            lrcView!.lrcConfig = _config.lrcConfig
+            scoreView?.scoreConfig = _config.scoreConfig
+            lrcView?.lrcConfig = _config.lrcConfig
             scoreViewHCons?.constant = scoreView?.scoreConfig?.scoreViewHeight ?? 100
             scoreViewHCons?.isActive = true
             scoreView?.isHidden = _config.isHiddenScoreView
@@ -125,8 +125,7 @@ public class AgoraLrcScoreView: UIView {
         get {
             guard _scoreView == nil else { return _scoreView }
             _scoreView = AgoraKaraokeScoreView()
-            _scoreView?.scoreConfig = config?.scoreConfig
-            _scoreView?.delegate = scoreDelegate
+            updateUI()
             return _scoreView
         }
         set {
@@ -139,7 +138,7 @@ public class AgoraLrcScoreView: UIView {
         get {
             guard _lrcView == nil else { return _lrcView }
             _lrcView = AgoraLrcView()
-            _lrcView?.lrcConfig = config?.lrcConfig
+            updateUI()
             _lrcView?.seekToTime = { [weak self] time in
                 self?.delegate?.seekToTime?(time: time)
             }
@@ -257,10 +256,7 @@ public class AgoraLrcScoreView: UIView {
     private func startMillisecondsHandler() {
         currentTime += 0.010
         timerHandler(time: currentTime)
-        guard statckView.arrangedSubviews.isEmpty else { return }
         updateUI()
-        _config.scoreConfig = _config.scoreConfig
-        _config.lrcConfig = _config.lrcConfig
     }
 
     private func timerHandler(time: TimeInterval) {
@@ -296,6 +292,12 @@ public class AgoraLrcScoreView: UIView {
     }
 
     private func updateUI() {
+        guard statckView.arrangedSubviews.isEmpty else { return }
+        _config.scoreConfig = _config.scoreConfig
+        _config.lrcConfig = _config.lrcConfig
+        _scoreView?.scoreConfig = config?.scoreConfig
+        _scoreView?.delegate = scoreDelegate
+        _scoreView?.isHidden = config?.isHiddenScoreView ?? false
         scoreView?.translatesAutoresizingMaskIntoConstraints = false
         statckView.addArrangedSubview(scoreView!)
         statckView.addArrangedSubview(lrcView!)
