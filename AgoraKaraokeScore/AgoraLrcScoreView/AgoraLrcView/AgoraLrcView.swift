@@ -46,7 +46,7 @@ class AgoraLrcView: UIView {
 
     private var dataArray: [Any]? {
         didSet {
-            tipsLabel.isHidden = dataArray != nil || !(dataArray?.isEmpty ?? true)
+            tipsLabel.isHidden = !(dataArray?.isEmpty ?? true)
             tableView.reloadData()
         }
     }

@@ -12,7 +12,7 @@ class ViewController: UIViewController {
     private lazy var lrcScoreView: AgoraLrcScoreView = {
         let lrcScoreView = AgoraLrcScoreView(delegate: self)
         let config = AgoraLrcScoreConfigModel()
-        config.isHiddenScoreView = true
+//        config.isHiddenScoreView = true
         let scoreConfig = AgoraScoreItemConfigModel()
         scoreConfig.tailAnimateColor = .yellow
         scoreConfig.scoreViewHeight = 100
@@ -24,6 +24,7 @@ class ViewController: UIViewController {
         lrcConfig.isHiddenBottomMask = true
         lrcConfig.lrcHighlightFontSize = .systemFont(ofSize: 18)
         lrcConfig.lrcTopAndBottomMargin = 10
+        lrcConfig.tipsColor = .white
         config.lrcConfig = lrcConfig
         lrcScoreView.config = config
         return lrcScoreView
@@ -96,17 +97,17 @@ class ViewController: UIViewController {
         
         setupPlayer()
         createData()
-        let lrcConfig = lrcScoreView.config?.lrcConfig
-        lrcConfig?.tipsString = "测试"
-        lrcScoreView.updateLrcConfig = lrcConfig
+//        let lrcConfig = lrcScoreView.config?.lrcConfig
+//        lrcConfig?.tipsString = "测试44"
+//        lrcScoreView.updateLrcConfig = lrcConfig
     }
     
     private func createData() {
         // 下载歌词
-//        lrcScoreView.setLrcUrl(url: "https://webdemo.agora.io/ktv/005.xml")
-//        lrcScoreView.setLrcUrl(url: "https://github.com/cleven1/KTVLrcScore/blob/main/005.xml")
         lrcScoreView.setLrcUrl(url: "https://webdemo.agora.io/ktv/005.xml")
-//        lrcScoreView.setLrcUrl(url: "https://accktv.sd-rtn.com/202202251412/2b57c52b1e6878d1fd40e68dcd016388/release/lyric/zip_utf8/1/06fc83878ca54245855fdf5c0f9ddb25.zip")
+//        lrcScoreView.setLrcUrl(url: "https://github.com/cleven1/KTVLrcScore/blob/main/005.xml")
+//        lrcScoreView.setLrcUrl(url: "https://webdemo.agora.io/ktv/005.xml")
+//        lrcScoreView.setLrcUrl(url: "https://accktv.sd-rtn.com/202202251412/2b57c52b1e6878d1fd40e68dcd01afasfasf6388/release/lyric/zip_utf8/1/06fc83878ca54245855fdf5c0f9ddb25.zip")
     }
     
     private var audioPlayer: AVAudioPlayer?
