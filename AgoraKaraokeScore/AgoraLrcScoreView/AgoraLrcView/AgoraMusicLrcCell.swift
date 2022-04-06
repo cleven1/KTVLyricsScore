@@ -18,7 +18,7 @@ class AgoraMusicLrcCell: UITableViewCell {
         label.numberOfLines = 0
         return label
     }()
-    
+
     private var topCons: NSLayoutConstraint?
     private var bottomCons: NSLayoutConstraint?
 

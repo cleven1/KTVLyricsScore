@@ -38,6 +38,7 @@ class AgoraKaraokeScoreView: UIView {
             updateUI()
         }
     }
+
     public var scoreConfig: AgoraScoreItemConfigModel? {
         set {
             _scoreConfig = newValue ?? AgoraScoreItemConfigModel()
@@ -138,6 +139,8 @@ class AgoraKaraokeScoreView: UIView {
         currentScore = _scoreConfig.defaultScore
         currentTime = 0
         isInsertEnd = false
+        dataArray = []
+        collectionView.reloadData()
     }
 
     func start(currentTime: TimeInterval, totalTime: TimeInterval) {
@@ -156,6 +159,7 @@ class AgoraKaraokeScoreView: UIView {
         collectionView.setContentOffset(CGPoint(x: pointX, y: 0),
                                         animated: false)
     }
+
     func scrollToTop(animation: Bool = false) {
         guard !collectionView.visibleCells.isEmpty else { return }
         collectionView.scrollToItem(at: IndexPath(item: 0, section: 0), at: .top, animated: animation)

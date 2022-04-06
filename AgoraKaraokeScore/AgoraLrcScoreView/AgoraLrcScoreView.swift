@@ -63,10 +63,10 @@ public class AgoraLrcScoreView: UIView {
             statckView.spacing = _config.spacing
             isHiddenWatitingView = _config.lrcConfig?.isHiddenWatitingView ?? false
             setupBackgroundImage()
-            reset()
             updateUI()
         }
     }
+
     public var config: AgoraLrcScoreConfigModel? {
         set {
             _config = newValue ?? AgoraLrcScoreConfigModel()
@@ -75,13 +75,13 @@ public class AgoraLrcScoreView: UIView {
             return _config
         }
     }
-    
+
     public var updateScoreConfig: AgoraScoreItemConfigModel? {
         didSet {
             scoreView?.scoreConfig = updateScoreConfig
         }
     }
-    
+
     public var updateLrcConfig: AgoraLrcConfigModel? {
         didSet {
             lrcView?.lrcConfig = updateLrcConfig
@@ -126,7 +126,6 @@ public class AgoraLrcScoreView: UIView {
         get {
             guard _scoreView == nil else { return _scoreView }
             _scoreView = AgoraKaraokeScoreView()
-            updateUI()
             return _scoreView
         }
         set {
@@ -139,7 +138,6 @@ public class AgoraLrcScoreView: UIView {
         get {
             guard _lrcView == nil else { return _lrcView }
             _lrcView = AgoraLrcView()
-            updateUI()
             _lrcView?.seekToTime = { [weak self] time in
                 self?.delegate?.seekToTime?(time: time)
             }
@@ -157,7 +155,7 @@ public class AgoraLrcScoreView: UIView {
             _lrcView = newValue
         }
     }
-    
+
     // 记录是否隐藏等待小圆点
     private var isHiddenWatitingView: Bool = false
     private lazy var timer = GCDTimer()
@@ -187,6 +185,7 @@ public class AgoraLrcScoreView: UIView {
         AgoraDownLoadManager.manager.downloadLrcFile(urlString: url, completion: { lryic in
             self.scoreView?.isHidden = self._config.isHiddenScoreView || lryic is [AgoraLrcModel]
             self.config?.lrcConfig?.isHiddenWatitingView = self.isHiddenWatitingView
+            self.lrcView?.lrcConfig = self.config?.lrcConfig
             if lryic is AgoraMiguSongLyric {
                 self.lrcView?.miguSongModel = lryic as? AgoraMiguSongLyric
             } else {
@@ -206,13 +205,13 @@ public class AgoraLrcScoreView: UIView {
     public func setVoicePitch(_ voicePitch: [Double]) {
         scoreView?.setVoicePitch(voicePitch)
     }
-    
+
     /// 滚到顶部
     public func scrollToTop(animation: Bool = false) {
         lrcView?.scrollToTop(animation: animation)
         scoreView?.scrollToTop(animation: animation)
     }
-    
+
     /// 根据时间滚到指定位置
     public func scrollToTime(timestamp: TimeInterval) {
         lrcView?.scrollToTime(timestamp: timestamp * 1000)
@@ -249,12 +248,8 @@ public class AgoraLrcScoreView: UIView {
         stop()
         scoreView?.reset()
         lrcView?.reset()
-        lrcView?.removeFromSuperview()
-        lrcView = nil
-        scoreView?.removeFromSuperview()
-        scoreView = nil
     }
-    
+
     public func resetTime() {
         preTime = 0
         currentTime = 0
@@ -263,7 +258,6 @@ public class AgoraLrcScoreView: UIView {
     private func startMillisecondsHandler() {
         currentTime += 0.010
         timerHandler(time: currentTime)
-        updateUI()
     }
 
     private func timerHandler(time: TimeInterval) {
@@ -295,21 +289,22 @@ public class AgoraLrcScoreView: UIView {
         statckView.topAnchor.constraint(equalTo: topAnchor).isActive = true
         statckView.trailingAnchor.constraint(equalTo: trailingAnchor).isActive = true
         statckView.bottomAnchor.constraint(equalTo: bottomAnchor).isActive = true
-        updateUI()
     }
 
     private func updateUI() {
         guard statckView.arrangedSubviews.isEmpty,
               let scoreView = scoreView,
-                let lrcView = lrcView else { return }
+              let lrcView = lrcView,
+              let lrcConfig = _config.lrcConfig else { return }
         scoreView.scoreConfig = _config.scoreConfig
-        lrcView.lrcConfig = _config.lrcConfig
+        lrcConfig.isHiddenWatitingView = isHiddenWatitingView
+        lrcView.lrcConfig = lrcConfig
         _scoreView?.delegate = scoreDelegate
-        _scoreView?.isHidden = config?.isHiddenScoreView ?? false
         scoreView.translatesAutoresizingMaskIntoConstraints = false
+        let height = _config.scoreConfig?.scoreViewHeight ?? 100
+        scoreView.isHidden = config?.isHiddenScoreView ?? false
+        scoreView.heightAnchor.constraint(equalToConstant: height).isActive = true
         statckView.addArrangedSubview(scoreView)
         statckView.addArrangedSubview(lrcView)
-        let height = _config.scoreConfig?.scoreViewHeight ?? 100
-        scoreView.heightAnchor.constraint(equalToConstant: height).isActive = true
     }
 }

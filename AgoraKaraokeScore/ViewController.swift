@@ -20,7 +20,7 @@ class ViewController: UIViewController {
         config.scoreConfig = scoreConfig
         let lrcConfig = AgoraLrcConfigModel()
         lrcConfig.lrcFontSize = .systemFont(ofSize: 15)
-        lrcConfig.isHiddenWatitingView = true
+        lrcConfig.isHiddenWatitingView = false
         lrcConfig.isHiddenBottomMask = true
         lrcConfig.lrcHighlightFontSize = .systemFont(ofSize: 18)
         lrcConfig.lrcTopAndBottomMargin = 10

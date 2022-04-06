@@ -14,12 +14,13 @@ class AgoraLrcView: UIView {
     var currentPlayerLrc: ((String, CGFloat) -> Void)?
     /// 当前歌词pitch回调
     var currentWordPitchClosure: ((Int, Int) -> Void)?
-    
+
     private var _lrcConfig: AgoraLrcConfigModel = .init() {
         didSet {
             updateUI()
         }
     }
+
     var lrcConfig: AgoraLrcConfigModel? {
         set {
             _lrcConfig = newValue ?? AgoraLrcConfigModel()
@@ -34,7 +35,7 @@ class AgoraLrcView: UIView {
             dataArray = miguSongModel?.sentences
             // 计算总pitch数量
             totalPitchCount = miguSongModel?.sentences
-                .flatMap({ $0.tones }).filter({ $0.pitch > 0 }).count ?? 0
+                .flatMap { $0.tones }.filter { $0.pitch > 0 }.count ?? 0
         }
     }
 
@@ -145,7 +146,7 @@ class AgoraLrcView: UIView {
         super.init(frame: frame)
         setupUI()
     }
-    
+
     @available(*, unavailable)
     required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
@@ -164,8 +165,12 @@ class AgoraLrcView: UIView {
                                      width: bounds.width,
                                      height: _lrcConfig.bottomMaskHeight > 0 ? _lrcConfig.bottomMaskHeight : bounds.height)
         tableView.superview?.layer.addSublayer(gradientLayer)
+        if tableView.backgroundColor != .clear {
+            tableView.backgroundColor = .clear
+            tableView.separatorStyle = .none
+        }
     }
-    
+
     private func setupUI() {
         backgroundColor = .clear
         statckView.translatesAutoresizingMaskIntoConstraints = false
@@ -193,16 +198,12 @@ class AgoraLrcView: UIView {
         lineView.centerYAnchor.constraint(equalTo: tableView.centerYAnchor).isActive = true
 
         updateUI()
-        
+
         layoutIfNeeded()
     }
 
     private var preTime: TimeInterval = 0
     func start(currentTime: TimeInterval) {
-        if tableView.backgroundColor != .clear {
-            tableView.backgroundColor = .clear
-            tableView.separatorStyle = .none
-        }
         guard !(dataArray?.isEmpty ?? false) else { return }
         let time: TimeInterval = lrcDatas == nil ? 1000 : 1
         if self.currentTime == 0 {
@@ -212,19 +213,19 @@ class AgoraLrcView: UIView {
         if beginTime <= 0 {
             beginTime = (dataArray?.first as? AgoraLrcModel)?.time ?? 0
         }
-        if currentTime > beginTime {
+        if currentTime > beginTime, (dataArray?.count ?? 0) > 0 {
             loadView.hiddenLoadView()
         }
         self.currentTime = currentTime * time
         preTime = currentTime
         updatePerSecond()
     }
-    
+
     func scrollToTop(animation: Bool = false) {
         guard !tableView.visibleCells.isEmpty else { return }
         tableView.scrollToRow(at: IndexPath(row: 0, section: 0), at: .top, animated: animation)
     }
-    
+
     func scrollToTime(timestamp: TimeInterval) {
         currentTime = timestamp
         updatePerSecond()
@@ -234,6 +235,8 @@ class AgoraLrcView: UIView {
         currentTime = 0
         miguSongModel = nil
         lrcDatas = nil
+        tableView.reloadData()
+        loadView.isHidden = lrcConfig?.isHiddenWatitingView ?? false
     }
 
     private func updateUI() {
@@ -245,12 +248,13 @@ class AgoraLrcView: UIView {
         loadView.isHidden = _lrcConfig.isHiddenWatitingView
         tableView.isScrollEnabled = _lrcConfig.isDrag
         gradientLayer.locations = _lrcConfig.bottomMaskLocations
-        gradientLayer.colors = _lrcConfig.bottomMaskColors.map({ $0.cgColor })
+        gradientLayer.colors = _lrcConfig.bottomMaskColors.map { $0.cgColor }
         gradientLayer.isHidden = _lrcConfig.isHiddenBottomMask
         statckView.spacing = _lrcConfig.waitingViewBottomMargin
     }
 
     // MARK: - 更新歌词的时间
+
     private var preWord: String?
     private var prePitch: Int = 0
     private var preIndex: Int = 0
@@ -269,8 +273,8 @@ class AgoraLrcView: UIView {
             currentPlayerLrc?(lrc.lrcText ?? "", progress)
             if preIndex != scrollRow {
                 currentWordPitchClosure?(lrc.pitch, totalPitchCount)
-                
-            } else if (preWord != lrc.lrcText || prePitch != lrc.pitch) {
+
+            } else if preWord != lrc.lrcText || prePitch != lrc.pitch {
                 currentWordPitchClosure?(lrc.pitch, totalPitchCount)
             }
             preWord = lrc.lrcText
@@ -363,14 +367,14 @@ extension AgoraLrcView: UITableViewDataSource, UITableViewDelegate {
         let cell = tableView.dequeueReusableCell(withIdentifier: "AgoaraLrcViewCell", for: indexPath) as! AgoraMusicLrcCell
         cell.lrcConfig = _lrcConfig
         let lrcModel = dataArray?[indexPath.row]
-        
+
         if scrollRow != indexPath.row {
             if lrcModel is AgoraMiguLrcSentence {
                 cell.setupMusicXmlLrc(with: lrcModel as? AgoraMiguLrcSentence, progress: 0)
             } else {
                 cell.setupMusicLrc(with: lrcModel as? AgoraLrcModel, progress: 0)
             }
-            
+
             if indexPath.row == 0, preRow < 0 {
                 if lrcModel is AgoraMiguLrcSentence {
                     cell.setupCurrentLrcScale(text: (lrcModel as? AgoraMiguLrcSentence)?.toSentence())
@@ -378,7 +382,7 @@ extension AgoraLrcView: UITableViewDataSource, UITableViewDelegate {
                     cell.setupCurrentLrcScale(text: (lrcModel as? AgoraLrcModel)?.lrc)
                 }
             }
-            
+
         } else if scrollRow > -1 {
             if lrcModel is AgoraMiguLrcSentence {
                 cell.setupCurrentLrcScale(text: (lrcModel as? AgoraMiguLrcSentence)?.toSentence())

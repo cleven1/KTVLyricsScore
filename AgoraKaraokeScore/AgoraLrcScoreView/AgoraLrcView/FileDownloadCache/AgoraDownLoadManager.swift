@@ -24,13 +24,14 @@ class AgoraDownLoadManager {
 
     func downloadLrcFile(urlString: String,
                          completion: @escaping Completion,
-                         failure: @escaping UnZipErrorClosure) {
+                         failure: @escaping UnZipErrorClosure)
+    {
         delegate?.beginDownloadLrc?(url: urlString)
         self.urlString = urlString
         let fileName = urlString.fileName.components(separatedBy: ".").first ?? ""
         let xmlPath = AgoraCacheFileHandle.cacheFileExists(with: fileName + ".xml")
         let lrcPath = AgoraCacheFileHandle.cacheFileExists(with: urlString)
-        if urlString.hasSuffix(".xml") && !urlString.hasPrefix("https:") && xmlPath == nil {
+        if urlString.hasSuffix(".xml"), !urlString.hasPrefix("https:"), xmlPath == nil {
             parseXml(path: urlString, completion: completion)
             return
         }
@@ -94,7 +95,7 @@ class AgoraDownLoadManager {
                 DispatchQueue.main.async {
                     self.downloadLrcFile(urlString: self.urlString,
                                          completion: completion,
-                                         failure: failure)                    
+                                         failure: failure)
                 }
                 self.retryCount += 1
             }
