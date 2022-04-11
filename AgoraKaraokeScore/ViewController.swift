@@ -179,6 +179,10 @@ extension ViewController: AgoraLrcViewDelegate {
     func agoraWordPitch(pitch: Int, totalCount: Int) {
         print("pitch === \(pitch)  totalCount == \(totalCount)")
     }
+    
+    func currentLineEnds() {
+        print("每行歌词结束")
+    }
 }
 
 extension ViewController: AgoraLrcDownloadDelegate {

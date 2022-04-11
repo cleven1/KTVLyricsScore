@@ -24,6 +24,9 @@ protocol AgoraLrcViewDelegate {
     /// 歌词pitch回调
     @objc
     optional func agoraWordPitch(pitch: Int, totalCount: Int)
+    /// 每行歌词结束回调
+    @objc
+    optional func currentLineEnds()
 }
 
 @objc(AgoraLrcDownloadDelegate)
@@ -148,6 +151,9 @@ public class AgoraLrcScoreView: UIView {
             _lrcView?.currentWordPitchClosure = { [weak self] pitch, totalCount in
                 guard pitch > 0 else { return }
                 self?.delegate?.agoraWordPitch?(pitch: pitch, totalCount: totalCount)
+            }
+            _lrcView?.currentLineEndsClosure = { [weak self] in
+                self?.delegate?.currentLineEnds?()
             }
             return _lrcView
         }
