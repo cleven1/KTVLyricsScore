@@ -1,14 +1,14 @@
 Pod::Spec.new do |spec|
-  spec.name         = "AgoraLrcScore"
+  spec.name         = "AgoraLyricsScore"
   spec.version      = "1.0.0"
-  spec.summary      = "AgoraLrcScore"
-  spec.description  = "AgoraLrcScore"
+  spec.summary      = "AgoraLyricsScore"
+  spec.description  = "AgoraLyricsScore"
 
-  spec.homepage     = "https://www.agora.io"
+  spec.homepage     = "git@github.com:AgoraIO-Community/LrcView-iOS"
   spec.license      = "MIT"
   spec.author       = { "ZYQ" => "zhaoyongqiang@agora.io" }
-  spec.source       = { :git => "" }
-  spec.source_files  = "**/*.swift"
+  spec.source       = { :git => "git@github.com:AgoraIO-Community/LrcView-iOS.git" }
+  spec.source_files  = "AgoraKaraokeScore/AgoraLrcScoreView/**/*.swift"
   spec.pod_target_xcconfig = { 'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'arm64', 'DEFINES_MODULE' => 'YES' }
   spec.user_target_xcconfig = { 'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'arm64', 'DEFINES_MODULE' => 'YES' }
   spec.ios.deployment_target = '10.0'

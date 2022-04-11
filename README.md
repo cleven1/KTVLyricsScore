@@ -215,10 +215,9 @@ protocol AgoraKaraokeScoreDelegate {
 
 ### 集成方式
 
-##### 本地pod引入
+##### pod引入
 
-把 'AgoraLrcScoreView' 复制到根目录, 执行pod
 
 ```ruby
-pod 'AgoraLrcScore', :path => "AgoraLrcScoreView"
+pod 'AgoraLyricsScore', '~> 1.0.0'"
 ```
