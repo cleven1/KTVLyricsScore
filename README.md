@@ -82,8 +82,8 @@
     public var lrcFontSize: UIFont = .systemFont(ofSize: 15)
     /// 歌词高亮文字缩放大小 默认: 1.1
     public var lrcHighlightScaleSize: Double = 1.1
-    /// 歌词左右两边间距
-    public var lrcLeftAndRightMargin: CGFloat = 15
+    /// 歌词最大宽度
+    public var maxWidth: CGFloat = UIScreen.main.bounds.width - 30
     /// 是否隐藏等待开始圆点
     public var isHiddenWatitingView: Bool = false
     /// 等待开始圆点背景色 默认: 灰色

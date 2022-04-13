@@ -27,6 +27,7 @@ class AgoraMusicLrcCell: UITableViewCell {
             lrcLabel.textColor = lrcConfig?.lrcNormalColor
             lrcLabel.lrcDrawingColor = lrcConfig?.lrcDrawingColor
             lrcLabel.font = lrcConfig?.lrcFontSize
+            lrcLabel.preferredMaxLayoutWidth = lrcConfig?.maxWidth ?? 0
             topCons?.constant = lrcConfig?.lrcTopAndBottomMargin ?? 10
             bottomCons?.constant = -(lrcConfig?.lrcTopAndBottomMargin ?? 10)
             topCons?.isActive = true
@@ -89,12 +90,6 @@ class AgoraMusicLrcCell: UITableViewCell {
         bottomCons = lrcLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -10)
         topCons?.isActive = true
         bottomCons?.isActive = true
-    }
-
-    override func layoutSubviews() {
-        super.layoutSubviews()
-        let margin = lrcConfig?.lrcLeftAndRightMargin ?? 0
-        lrcLabel.preferredMaxLayoutWidth = contentView.frame.width - (margin * 2)
     }
 }
 

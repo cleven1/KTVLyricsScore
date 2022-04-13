@@ -29,8 +29,8 @@ public class AgoraLrcConfigModel: NSObject {
     public var lrcFontSize: UIFont = .systemFont(ofSize: 15)
     /// 歌词高亮文字大小 默认: 18
     public var lrcHighlightFontSize: UIFont = .systemFont(ofSize: 18)
-    /// 歌词左右两边间距
-    public var lrcLeftAndRightMargin: CGFloat = 15
+    /// 歌词最大宽度
+    public var maxWidth: CGFloat = UIScreen.main.bounds.width - 30
     /// 歌词上下间距
     public var lrcTopAndBottomMargin: CGFloat = 10
     /// 是否隐藏等待开始圆点
