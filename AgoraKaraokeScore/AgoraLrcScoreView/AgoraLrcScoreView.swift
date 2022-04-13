@@ -201,6 +201,8 @@ public class AgoraLrcScoreView: UIView {
                 self.scoreView?.lrcSentence = senences.sentences
             }
             self.downloadDelegate?.downloadLrcFinished?(url: url)
+            let totalTime = self.delegate?.getTotalTime() ?? 0
+            self.scoreView?.setTotalTime(totalTime: totalTime)
         }, failure: {
             self.lrcView?.lrcDatas = []
             self.config?.lrcConfig?.isHiddenWatitingView = true
@@ -232,7 +234,7 @@ public class AgoraLrcScoreView: UIView {
         timer.scheduledMillisecondsTimer(withName: "lrc", countDown: 1000 * 60 * 30, milliseconds: 10, queue: .main) { [weak self] _, duration in
             guard let self = self else { return }
             if duration.truncatingRemainder(dividingBy: 1000) == 0 {
-                let currentTime = self.roundToPlaces(value: self.delegate?.getPlayerCurrentTime() ?? 0, places: 10)
+                let currentTime = self.delegate?.getPlayerCurrentTime() ?? 0
                 self.isStop = currentTime == self.preTime
                 self.totalTime = self.roundToPlaces(value: self.delegate?.getTotalTime() ?? 0, places: 10)
                 self.currentTime = currentTime

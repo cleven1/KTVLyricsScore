@@ -26,9 +26,9 @@ class AgoraKaraokeScoreView: UIView {
 
     var lrcSentence: [AgoraMiguLrcSentence]? {
         didSet {
-            DispatchQueue.global().async {
-                self.createScoreData(data: self.lrcSentence)
-            }
+//            DispatchQueue.global().async {
+//                self.createScoreData(data: self.lrcSentence)
+//            }
         }
     }
 
@@ -115,6 +115,8 @@ class AgoraKaraokeScoreView: UIView {
     private var verticalLineLeadingCons: NSLayoutConstraint?
     private var cursorTopCons: NSLayoutConstraint?
     private var currentTime: TimeInterval = 0
+    private var decimalCount: Int = 0
+    private var totalTime: TimeInterval = 0
     private var isDrawingCell: Bool = false {
         didSet {
             updateDraw()
@@ -138,19 +140,33 @@ class AgoraKaraokeScoreView: UIView {
     func reset() {
         currentScore = _scoreConfig.defaultScore
         currentTime = 0
+        totalTime = 0
         isInsertEnd = false
+        decimalCount = 0
         dataArray = []
         collectionView.reloadData()
+    }
+    
+    func setTotalTime(totalTime: TimeInterval) {
+        if decimalCount <= 0 {
+            let count = Int("\(totalTime)".components(separatedBy: ".").last?.count ?? 3)
+            decimalCount = count - 1
+        }
+        createScoreData(data: lrcSentence)
+        if isInsertEnd == false {
+            guard let model = insertEndLrcData(lrcData: lrcSentence, totalTime: totalTime) else { return }
+            dataArray?.append(model)
+            isInsertEnd = true
+        }
+        self.totalTime = totalTime
     }
 
     func start(currentTime: TimeInterval, totalTime: TimeInterval) {
         self.currentTime = currentTime
         guard currentTime > 0, totalTime > 0 else { return }
-        if isInsertEnd == false {
-            guard let model = insertEndLrcData(lrcData: lrcSentence, totalTime: totalTime) else { return }
-            dataArray?.append(model)
-            isInsertEnd = true
-            return
+        if self.totalTime != totalTime {
+            reset()
+            setTotalTime(totalTime: totalTime)
         }
         emitterView.setupEmitterPoint(point: cursorView.center)
         let contentWidth = collectionView.contentSize.width - frame.width
@@ -247,10 +263,15 @@ class AgoraKaraokeScoreView: UIView {
     }
 
     private func calcuToWidth(time: TimeInterval) -> CGFloat {
-        let w = _scoreConfig.lineWidht * time
+        let w = _scoreConfig.lineWidht * roundToPlaces(value: time, places: decimalCount)
         return w.isNaN ? 0 : abs(w)
     }
 
+    private func roundToPlaces(value: Double, places: Int) -> Double {
+        let divisor = pow(10.0, Double(places))
+        return round(value * divisor) / divisor
+    }
+    
     private func createScoreData(data: [AgoraMiguLrcSentence]?) {
         guard let lrcData = data else { return }
         var dataArray = [AgoraScoreItemModel]()
@@ -270,8 +291,8 @@ class AgoraKaraokeScoreView: UIView {
                 model.leftKM = dataArray.map { $0.widthKM }.reduce(0, +)
                 dataArray.append(model)
             }
-            model.startTime = startTime
-            model.endTime = endTime
+            model.startTime = roundToPlaces(value: startTime, places: decimalCount)
+            model.endTime = roundToPlaces(value: endTime, places: decimalCount)
             model.pitch = Double(tone.pitch)
             model.widthKM = calcuToWidth(time: endTime - startTime)
             model.leftKM = dataArray.map { $0.widthKM }.reduce(0, +)
@@ -287,7 +308,7 @@ class AgoraKaraokeScoreView: UIView {
 
     private func insertStartLrcData(lrcData: [AgoraMiguLrcTone]) -> AgoraScoreItemModel? {
         guard let firstTone = lrcData.first(where: { $0.pitch > 0 }) else { return nil }
-        let endTime = firstTone.begin / 1000
+        let endTime = roundToPlaces(value: firstTone.begin / 1000 , places: decimalCount)
         let model = AgoraScoreItemModel()
         model.widthKM = calcuToWidth(time: endTime)
         model.isEmptyCell = true
@@ -313,11 +334,11 @@ class AgoraKaraokeScoreView: UIView {
         guard let lrcData = lrcData else { return nil }
         let tones = lrcData.flatMap { $0.tones }
         guard let firstTone = tones.last(where: { $0.pitch > 0 }) else { return nil }
-        let endTime = totalTime - (firstTone.end / 1000)
+        let endTime = totalTime - roundToPlaces(value: (firstTone.end / 1000), places: decimalCount)
         let model = AgoraScoreItemModel()
         model.widthKM = calcuToWidth(time: endTime)
         model.isEmptyCell = true
-        model.startTime = firstTone.end / 1000
+        model.startTime = roundToPlaces(value: firstTone.end / 1000, places: decimalCount)
         model.endTime = model.startTime + endTime
         model.leftKM = (dataArray?.last?.leftKM ?? 0) + (dataArray?.last?.widthKM ?? 0)
         return model

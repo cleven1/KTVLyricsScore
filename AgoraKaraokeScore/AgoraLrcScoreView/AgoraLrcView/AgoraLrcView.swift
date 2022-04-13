@@ -44,6 +44,7 @@ class AgoraLrcView: UIView {
     var lrcDatas: [AgoraLrcModel]? {
         didSet {
             dataArray = lrcDatas
+            guard let data = lrcDatas, !data.isEmpty else { return }
             _lrcConfig.lrcHighlightColor = .clear
         }
     }
@@ -66,7 +67,7 @@ class AgoraLrcView: UIView {
     private var preRow: Int = -1
     private var scrollRow: Int = -1 {
         didSet {
-            if scrollRow == oldValue { return }
+            if scrollRow == oldValue || scrollRow < 0 { return }
             if preRow > -1 && (dataArray?.count ?? 0) > 0 {
                 UIView.performWithoutAnimation {
                     tableView.reloadRows(at: [IndexPath(row: preRow, section: 0)], with: .fade)
@@ -236,8 +237,17 @@ class AgoraLrcView: UIView {
 
     func reset() {
         currentTime = 0
+        scrollRow = -1
+        preRow = -1
+        preIndex = 0
+        prePitch = 0
+        preWord = nil
+        progress = 0
+        isLineCallback = false
         miguSongModel = nil
         lrcDatas = nil
+        dataArray?.removeAll()
+        dataArray = nil
         tableView.reloadData()
         loadView.isHidden = lrcConfig?.isHiddenWatitingView ?? false
     }

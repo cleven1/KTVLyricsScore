@@ -219,5 +219,5 @@ protocol AgoraKaraokeScoreDelegate {
 
 
 ```ruby
-pod 'AgoraLyricsScore', '~> 1.0.0'"
+pod 'AgoraLyricsScore', '~> 1.0.1'"
 ```
