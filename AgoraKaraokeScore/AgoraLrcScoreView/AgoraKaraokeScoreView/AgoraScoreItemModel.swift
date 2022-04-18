@@ -78,4 +78,8 @@ public class AgoraScoreItemConfigModel: NSObject {
     public var tailAnimateColor: UIColor? = .yellow
     /// 评分默认分数: 50
     public var defaultScore: Double = 50
+    /// 每行歌词计算分数: 默认 100分
+    public var lineCalcuScore: Double = 100
+    /// 低于最低分不计算分数
+    public var minCalcuScore: Double = 40
 }

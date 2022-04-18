@@ -24,9 +24,6 @@ protocol AgoraLrcViewDelegate {
     /// 歌词pitch回调
     @objc
     optional func agoraWordPitch(pitch: Int, totalCount: Int)
-    /// 每行歌词结束回调
-    @objc
-    optional func currentLineEnds()
 }
 
 @objc(AgoraLrcDownloadDelegate)
@@ -65,6 +62,7 @@ public class AgoraLrcScoreView: UIView {
             lrcView?.lrcConfig = _config.lrcConfig
             statckView.spacing = _config.spacing
             isHiddenWatitingView = _config.lrcConfig?.isHiddenWatitingView ?? false
+            isDragLrcView = _config.lrcConfig?.isDrag ?? false
             setupBackgroundImage()
             updateUI()
         }
@@ -153,7 +151,7 @@ public class AgoraLrcScoreView: UIView {
                 self?.delegate?.agoraWordPitch?(pitch: pitch, totalCount: totalCount)
             }
             _lrcView?.currentLineEndsClosure = { [weak self] in
-                self?.delegate?.currentLineEnds?()
+                self?.scoreView?.lyricsLineEnds()
             }
             return _lrcView
         }
@@ -164,6 +162,8 @@ public class AgoraLrcScoreView: UIView {
 
     // 记录是否隐藏等待小圆点
     private var isHiddenWatitingView: Bool = false
+    // 记录可否拖动歌词组件
+    private var isDragLrcView: Bool = false
     private lazy var timer = GCDTimer()
     private var scoreViewHCons: NSLayoutConstraint?
     private var currentTime: TimeInterval = 0
@@ -191,7 +191,7 @@ public class AgoraLrcScoreView: UIView {
         AgoraDownLoadManager.manager.downloadLrcFile(urlString: url, completion: { lryic in
             self.scoreView?.isHidden = self._config.isHiddenScoreView || lryic is [AgoraLrcModel]
             self.config?.lrcConfig?.isHiddenWatitingView = self.isHiddenWatitingView
-            self.lrcView?.lrcConfig = self.config?.lrcConfig
+            self.config?.lrcConfig?.isDrag = self.isDragLrcView
             if lryic is AgoraMiguSongLyric {
                 self.lrcView?.miguSongModel = lryic as? AgoraMiguSongLyric
             } else {
@@ -199,10 +199,13 @@ public class AgoraLrcScoreView: UIView {
             }
             if let senences = lryic as? AgoraMiguSongLyric, self.scoreView?.isHidden == false {
                 self.scoreView?.lrcSentence = senences.sentences
+                self.lrcView?.lrcConfig?.isDrag = false
             }
             self.downloadDelegate?.downloadLrcFinished?(url: url)
             let totalTime = self.delegate?.getTotalTime() ?? 0
             self.scoreView?.setTotalTime(totalTime: totalTime)
+            self.lrcView?.lrcConfig = self.config?.lrcConfig
+            
         }, failure: {
             self.lrcView?.lrcDatas = []
             self.config?.lrcConfig?.isHiddenWatitingView = true

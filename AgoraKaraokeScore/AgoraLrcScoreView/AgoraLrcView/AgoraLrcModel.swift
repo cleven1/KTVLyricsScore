@@ -72,6 +72,9 @@ class AgoraMiguLrcSentence {
     func toPitch() -> [Int] {
         tones.map { $0.pitch }
     }
+    func tonesCount() -> Int {
+        tones.filter({ $0.word.isEmpty == false }).count
+    }
 
     func processBlank() {
         tones.enumerated().forEach { item in
@@ -91,7 +94,7 @@ class AgoraMiguLrcSentence {
         for (index, tone) in tones.enumerated() {
             if time >= tone.begin, time <= tone.end {
                 let progress = (time - tone.begin) / (tone.end - tone.begin)
-                let total = (CGFloat(index) + progress) / CGFloat(tones.count)
+                let total = (CGFloat(index) + progress) / CGFloat(tonesCount())
                 totalProgress = total
                 return (total, tone.pitch)
             }

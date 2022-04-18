@@ -41,7 +41,7 @@ public class AgoraLrcConfigModel: NSObject {
     public var waitingViewSize: CGFloat = 10
     /// 等待开始圆点底部间距
     public var waitingViewBottomMargin: CGFloat = 0
-    /// 是否可以拖动歌词 默认: true
+    /// 是否可以拖动歌词 默认: true,  如果开启评分功能,禁止拖动
     public var isDrag: Bool = true
     /// 底部蒙层颜色
     public var bottomMaskColors: [UIColor] = [UIColor(white: 0, alpha: 0.05),

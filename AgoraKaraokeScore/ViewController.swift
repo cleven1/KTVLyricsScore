@@ -177,11 +177,7 @@ extension ViewController: AgoraLrcViewDelegate {
     }
 
     func agoraWordPitch(pitch: Int, totalCount: Int) {
-        print("pitch === \(pitch)  totalCount == \(totalCount)")
-    }
-    
-    func currentLineEnds() {
-        print("每行歌词结束")
+//        print("pitch === \(pitch)  totalCount == \(totalCount)")
     }
 }
 
@@ -198,8 +194,9 @@ extension ViewController: AgoraLrcDownloadDelegate {
 }
 
 extension ViewController: AgoraKaraokeScoreDelegate {
-    func agoraKaraokeScore(score: Double, totalScore: Double) {
-        scoreLabel.text = "分数: \(score) 总分: \(Int(totalScore))"
+    func agoraKaraokeScore(score: Double, cumulativeScore: Double, totalScore: Double) {
+//        scoreLabel.text = "分数: \(score) 累加分: \(cumulativeScore) 总分: \(Int(totalScore))"
+        print("分数: \(score) 累加分: \(cumulativeScore) 总分: \(Int(totalScore))")
     }
 }
 

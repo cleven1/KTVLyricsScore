@@ -26,9 +26,7 @@ class AgoraKaraokeScoreView: UIView {
 
     var lrcSentence: [AgoraMiguLrcSentence]? {
         didSet {
-//            DispatchQueue.global().async {
-//                self.createScoreData(data: self.lrcSentence)
-//            }
+            self.totalScore = Double(lrcSentence?.count ?? 0) * 100
         }
     }
 
@@ -54,7 +52,6 @@ class AgoraKaraokeScoreView: UIView {
         didSet {
             DispatchQueue.main.async {
                 self.collectionView.reloadData()
-                self.totalScore = Double(self.dataArray?.filter { $0.isEmptyCell == false }.count ?? 0) * 2
             }
         }
     }
@@ -126,6 +123,8 @@ class AgoraKaraokeScoreView: UIView {
     private var totalScore: Double = 0
     private var currentScore: Double = 50
     private var isInsertEnd: Bool = false
+    private var pitchCount: Int = 0
+    private var scoreArray: [Double] = []
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -143,6 +142,8 @@ class AgoraKaraokeScoreView: UIView {
         totalTime = 0
         isInsertEnd = false
         decimalCount = 0
+        pitchCount = 0
+        scoreArray.removeAll()
         dataArray = []
         collectionView.reloadData()
     }
@@ -180,9 +181,22 @@ class AgoraKaraokeScoreView: UIView {
         guard !collectionView.visibleCells.isEmpty else { return }
         collectionView.scrollToItem(at: IndexPath(item: 0, section: 0), at: .top, animated: animation)
     }
+    
+    // 每行歌词结束计算分数
+    func lyricsLineEnds() {
+        guard !scoreArray.isEmpty, let dataArray = dataArray, !dataArray.isEmpty else { return }
+        let score = scoreArray.reduce(0, +) / Double(pitchCount)
+        currentScore += score
+        delegate?.agoraKaraokeScore?(score: score,
+                                     cumulativeScore: currentScore > totalScore ? totalScore : currentScore,
+                                     totalScore: totalScore)
+        pitchCount = 0
+        scoreArray.removeAll()
+    }
 
     public func setVoicePitch(_ voicePitch: [Double]) {
         calcuSongScore(pitch: voicePitch.last ?? 0)
+        pitchCount += 1
     }
 
     private var preModel: AgoraScoreItemModel?
@@ -197,41 +211,39 @@ class AgoraKaraokeScoreView: UIView {
         }
 
         let y = pitchToY(min: model.pitchMin, max: model.pitchMax, pitch)
-
+        
+        let calcuScore = scoreConfig?.lineCalcuScore ?? 100
+        let score = (1 - abs(model.pitch - pitch) / pitch) * calcuScore
+        guard score >= 0 && score <= calcuScore else { return }
         // 计算线的中心位置
-        let lineCenterY = (model.topKM + _scoreConfig.lineHeight) - _scoreConfig.lineHeight * 0.5
-        var score = 100 - abs(y - lineCenterY)
-        score = score > 100 ? 100 : score < 0 ? 0 : score
-        var addScore: Double = 0
+//        let lineCenterY = (model.topKM + _scoreConfig.lineHeight) - _scoreConfig.lineHeight * 0.5
+//        var score = 100 - abs(y - lineCenterY)
+//        score = score > 100 ? 100 : score < 0 ? 0 : score
         if preModel?.startTime == model.startTime,
            preModel?.endTime == model.endTime,
-           score >= 85
+           score >= calcuScore - 15
         {
             cursorAnimation(y: y, isDraw: true)
-            triangleView.updateAlpha(at: pitch <= 0 ? 0 : score / 100)
+            triangleView.updateAlpha(at: pitch <= 0 ? 0 : score / calcuScore)
             return
         }
-
-        if score >= 95, pitch > 0 {
+        if score >= calcuScore - 5, pitch > 0 {
             cursorAnimation(y: y, isDraw: true)
-            triangleView.updateAlpha(at: pitch <= 0 ? 0 : score / 100)
-            addScore += 2
+            triangleView.updateAlpha(at: pitch <= 0 ? 0 : score / calcuScore)
             preModel = model
 
-        } else if score >= 85, pitch > 0 {
+        } else if score >= calcuScore - 15, pitch > 0 {
             cursorAnimation(y: y, isDraw: true)
-            triangleView.updateAlpha(at: pitch <= 0 ? 0 : score / 100)
-            addScore += 1
+            triangleView.updateAlpha(at: pitch <= 0 ? 0 : score / calcuScore)
             preModel = model
 
         } else {
             cursorAnimation(y: y, isDraw: false)
             triangleView.updateAlpha(at: 0)
         }
-        currentScore += addScore
-        delegate?.agoraKaraokeScore?(score: addScore,
-                                     cumulativeScore: currentScore > totalScore ? totalScore : currentScore,
-                                     totalScore: totalScore)
+        if score >= scoreConfig?.minCalcuScore ?? 40 {
+            scoreArray.append(score)
+        }
     }
 
     private func cursorAnimation(y: CGFloat, isDraw: Bool) {

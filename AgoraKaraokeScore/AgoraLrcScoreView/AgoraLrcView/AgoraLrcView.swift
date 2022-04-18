@@ -213,11 +213,11 @@ class AgoraLrcView: UIView {
         if self.currentTime == 0 {
             loadView.beginAnimation()
         }
-        var beginTime = (dataArray?.first as? AgoraMiguLrcSentence)?.startTime() ?? 0
+        var beginTime = ((dataArray?.first as? AgoraMiguLrcSentence)?.startTime() ?? 0) / time
         if beginTime <= 0 {
             beginTime = (dataArray?.first as? AgoraLrcModel)?.time ?? 0
         }
-        if currentTime > beginTime, (dataArray?.count ?? 0) > 0 {
+        if currentTime > beginTime && (dataArray?.count ?? 0) > 0 {
             loadView.hiddenLoadView()
         }
         self.currentTime = currentTime * time
