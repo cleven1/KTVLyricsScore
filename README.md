@@ -16,22 +16,36 @@
 ```swift
     private lazy var lrcScoreView: AgoraLrcScoreView = {
         let lrcScoreView = AgoraLrcScoreView(delegate: self)
-        lrcScoreView.config.scoreConfig.scoreViewHeight = 100
-        lrcScoreView.config.scoreConfig.emitterColors = [.systemPink]
-        lrcScoreView.config.lrcConfig.lrcFontSize = .systemFont(ofSize: 15)
-        // 滚到顶部
-        lrcScoreView.scrollToTop()
-        // 设置代理
-        lrcScoreView.downloadDelegate = self
-        lrcScoreView.scoreDelegate = self
+        let config = AgoraLrcScoreConfigModel()
+//        config.isHiddenScoreView = true
+        let scoreConfig = AgoraScoreItemConfigModel()
+        scoreConfig.tailAnimateColor = .yellow
+        scoreConfig.scoreViewHeight = 100
+        scoreConfig.emitterColors = [.systemPink]
+        config.scoreConfig = scoreConfig
+        let lrcConfig = AgoraLrcConfigModel()
+        lrcConfig.lrcFontSize = .systemFont(ofSize: 15)
+        lrcConfig.isHiddenWatitingView = false
+        lrcConfig.isHiddenBottomMask = true
+        lrcConfig.lrcHighlightFontSize = .systemFont(ofSize: 18)
+        lrcConfig.lrcTopAndBottomMargin = 10
+        lrcConfig.tipsColor = .white
+        config.lrcConfig = lrcConfig
+        lrcScoreView.config = config
         return lrcScoreView
-    }()
+    }()lrcConfig
 ```
 #####  添加歌词URL
 ```
     lrcScoreView.setLrcUrl(url: "https://")
-    /// 开始滚动歌词
+    // 开始滚动歌词
     lrcScoreView.start()
+    // 停止
+    lrcScoreView.stop()
+    // 重置UI
+    lrcScoreView.reset()
+    // 时间重置
+    lrcScoreView.resetTime()
 ```
 
 
@@ -65,7 +79,7 @@
     /// 无歌词提示文案
     public var tipsString: String = "纯音乐，无歌词"
     /// 提示文字颜色
-    public var tipsColor: UIColor = .black
+    public var tipsColor: UIColor = .orange
     /// 提示文字大小
     public var tipsFont: UIFont = .systemFont(ofSize: 17)
     /// 分割线的颜色
@@ -80,21 +94,25 @@
     public var lrcDrawingColor: UIColor = .orange
     /// 歌词文字大小 默认: 15
     public var lrcFontSize: UIFont = .systemFont(ofSize: 15)
-    /// 歌词高亮文字缩放大小 默认: 1.1
-    public var lrcHighlightScaleSize: Double = 1.1
+    /// 歌词高亮文字大小 默认: 18
+    public var lrcHighlightFontSize: UIFont = .systemFont(ofSize: 18)
     /// 歌词最大宽度
     public var maxWidth: CGFloat = UIScreen.main.bounds.width - 30
+    /// 歌词上下间距
+    public var lrcTopAndBottomMargin: CGFloat = 10
     /// 是否隐藏等待开始圆点
     public var isHiddenWatitingView: Bool = false
     /// 等待开始圆点背景色 默认: 灰色
     public var waitingViewBgColor: UIColor? = .gray
     /// 等待开始圆点大小 默认: 10
     public var waitingViewSize: CGFloat = 10
-    /// 是否可以拖动歌词 默认: true
+    /// 等待开始圆点底部间距
+    public var waitingViewBottomMargin: CGFloat = 0
+    /// 是否可以拖动歌词 默认: true,  如果开启评分功能,禁止拖动
     public var isDrag: Bool = true
     /// 底部蒙层颜色
-    public var bottomMaskColors: [CGColor] = [UIColor(white: 0, alpha: 0.05).cgColor,
-                                              UIColor(white: 0, alpha: 0.8).cgColor]
+    public var bottomMaskColors: [UIColor] = [UIColor(white: 0, alpha: 0.05),
+                                              UIColor(white: 0, alpha: 0.8)]
     /// 蒙层位置
     public var bottomMaskLocations: [NSNumber] = [0.7, 1.0]
     /// 蒙层高度, 默认: 视图的高
@@ -167,6 +185,9 @@ protocol AgoraLrcViewDelegate {
     /// 当前正在播放的歌词和进度
     @objc
     optional func currentPlayerLrc(lrc: String, progress: CGFloat)
+    /// 歌词pitch回调
+    @objc
+    optional func agoraWordPitch(pitch: Int, totalCount: Int)
 }
 ```
 
@@ -223,5 +244,5 @@ protocol AgoraKaraokeScoreDelegate {
 
 
 ```ruby
-pod 'AgoraLyricsScore', '~> 1.0.3'"
+pod 'AgoraLyricsScore', '~> 1.0.4'"
 ```

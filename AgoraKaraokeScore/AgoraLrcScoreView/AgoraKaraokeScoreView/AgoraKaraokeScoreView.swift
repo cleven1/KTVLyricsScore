@@ -184,7 +184,11 @@ class AgoraKaraokeScoreView: UIView {
     
     // 每行歌词结束计算分数
     func lyricsLineEnds() {
-        guard !scoreArray.isEmpty, let dataArray = dataArray, !dataArray.isEmpty else { return }
+        guard !scoreArray.isEmpty, let dataArray = dataArray, !dataArray.isEmpty else {
+            pitchCount = 0
+            scoreArray.removeAll()
+            return
+        }
         let score = scoreArray.reduce(0, +) / Double(pitchCount)
         currentScore += score
         delegate?.agoraKaraokeScore?(score: score,
@@ -196,7 +200,6 @@ class AgoraKaraokeScoreView: UIView {
 
     public func setVoicePitch(_ voicePitch: [Double]) {
         calcuSongScore(pitch: voicePitch.last ?? 0)
-        pitchCount += 1
     }
 
     private var preModel: AgoraScoreItemModel?
@@ -213,37 +216,36 @@ class AgoraKaraokeScoreView: UIView {
         let y = pitchToY(min: model.pitchMin, max: model.pitchMax, pitch)
         
         let calcuScore = scoreConfig?.lineCalcuScore ?? 100
-        let score = (1 - abs(model.pitch - pitch) / pitch) * calcuScore
-        guard score >= 0 && score <= calcuScore else { return }
+//        let score = (1 - abs(model.pitch - pitch) / pitch) * calcuScore
+//        guard score >= 0 && score <= calcuScore else { return }
         // 计算线的中心位置
-//        let lineCenterY = (model.topKM + _scoreConfig.lineHeight) - _scoreConfig.lineHeight * 0.5
-//        var score = 100 - abs(y - lineCenterY)
-//        score = score > 100 ? 100 : score < 0 ? 0 : score
+        let lineCenterY = (model.topKM + _scoreConfig.lineHeight) - _scoreConfig.lineHeight * 0.5
+        var score = calcuScore - abs(y - lineCenterY)
+        score = score > calcuScore ? calcuScore : score < 0 ? 0 : score
         if preModel?.startTime == model.startTime,
-           preModel?.endTime == model.endTime,
-           score >= calcuScore - 15
+           preModel?.endTime == model.endTime
         {
-            cursorAnimation(y: y, isDraw: true)
+            cursorAnimation(y: y, isDraw: score >= calcuScore - 15)
             triangleView.updateAlpha(at: pitch <= 0 ? 0 : score / calcuScore)
             return
         }
         if score >= calcuScore - 5, pitch > 0 {
             cursorAnimation(y: y, isDraw: true)
             triangleView.updateAlpha(at: pitch <= 0 ? 0 : score / calcuScore)
-            preModel = model
 
         } else if score >= calcuScore - 15, pitch > 0 {
             cursorAnimation(y: y, isDraw: true)
             triangleView.updateAlpha(at: pitch <= 0 ? 0 : score / calcuScore)
-            preModel = model
 
         } else {
             cursorAnimation(y: y, isDraw: false)
             triangleView.updateAlpha(at: 0)
         }
-        if score >= scoreConfig?.minCalcuScore ?? 40 {
+        if score >= scoreConfig?.minCalcuScore ?? 40 && pitch > 0 {
             scoreArray.append(score)
         }
+        pitchCount += 1
+        preModel = model
     }
 
     private func cursorAnimation(y: CGFloat, isDraw: Bool) {
