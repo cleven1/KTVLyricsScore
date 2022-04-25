@@ -200,11 +200,13 @@ class AgoraKaraokeScoreView: UIView {
 
     public func setVoicePitch(_ voicePitch: [Double]) {
         calcuSongScore(pitch: voicePitch.last ?? 0)
+        guard voicePitch.reduce(0, +) > 0 else { return }
+        pitchCount += 1
     }
 
     private var preModel: AgoraScoreItemModel?
     private func calcuSongScore(pitch: Double) {
-        let time = currentTime * 1000 - 30
+        let time = currentTime * 1000 - 200
         guard let model = dataArray?.first(where: { time >= $0.startTime * 1000 && $0.endTime * 1000 >= time }), model.isEmptyCell == false
         else {
             isDrawingCell = false
@@ -222,18 +224,14 @@ class AgoraKaraokeScoreView: UIView {
         let lineCenterY = (model.topKM + _scoreConfig.lineHeight) - _scoreConfig.lineHeight * 0.5
         var score = calcuScore - abs(y - lineCenterY)
         score = score > calcuScore ? calcuScore : score < 0 ? 0 : score
-        if preModel?.startTime == model.startTime,
-           preModel?.endTime == model.endTime
-        {
-            cursorAnimation(y: y, isDraw: score >= calcuScore - 15)
-            triangleView.updateAlpha(at: pitch <= 0 ? 0 : score / calcuScore)
-            return
-        }
-        if score >= calcuScore - 5, pitch > 0 {
-            cursorAnimation(y: y, isDraw: true)
-            triangleView.updateAlpha(at: pitch <= 0 ? 0 : score / calcuScore)
-
-        } else if score >= calcuScore - 15, pitch > 0 {
+//        if preModel?.startTime == model.startTime,
+//           preModel?.endTime == model.endTime
+//        {
+//            cursorAnimation(y: y, isDraw: score >= calcuScore - 15)
+//            triangleView.updateAlpha(at: pitch <= 0 ? 0 : score / calcuScore)
+//            return
+//        }
+        if score >= calcuScore - 10, pitch > 0 {
             cursorAnimation(y: y, isDraw: true)
             triangleView.updateAlpha(at: pitch <= 0 ? 0 : score / calcuScore)
 
@@ -244,7 +242,6 @@ class AgoraKaraokeScoreView: UIView {
         if score >= scoreConfig?.minCalcuScore ?? 40 && pitch > 0 {
             scoreArray.append(score)
         }
-        pitchCount += 1
         preModel = model
     }
 

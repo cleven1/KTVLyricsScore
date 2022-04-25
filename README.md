@@ -119,6 +119,8 @@
     public var bottomMaskHeight: CGFloat = 0
     /// 是否隐藏底部蒙层
     public var isHiddenBottomMask: Bool = false
+    /// 歌词滚动位置
+    public var lyricsScrollPosition: UITableView.ScrollPosition = .middle
 ```
 
 ##### 评分配置
@@ -244,5 +246,5 @@ protocol AgoraKaraokeScoreDelegate {
 
 
 ```ruby
-pod 'AgoraLyricsScore', '~> 1.0.4'"
+pod 'AgoraLyricsScore', '~> 1.0.5'"
 ```

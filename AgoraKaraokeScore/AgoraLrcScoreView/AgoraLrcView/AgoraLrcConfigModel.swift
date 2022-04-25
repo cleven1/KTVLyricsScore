@@ -52,4 +52,6 @@ public class AgoraLrcConfigModel: NSObject {
     public var bottomMaskHeight: CGFloat = 0
     /// 是否隐藏底部蒙层
     public var isHiddenBottomMask: Bool = false
+    /// 歌词滚动位置
+    public var lyricsScrollPosition: UITableView.ScrollPosition = .middle
 }

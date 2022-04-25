@@ -75,7 +75,7 @@ class AgoraLrcView: UIView {
             }
             let indexPath = IndexPath(row: scrollRow, section: 0)
             tableView.reloadRows(at: [indexPath], with: .none)
-            tableView.scrollToRow(at: indexPath, at: .middle, animated: true)
+            tableView.scrollToRow(at: indexPath, at: _lrcConfig.lyricsScrollPosition, animated: true)
             preRow = scrollRow
         }
     }

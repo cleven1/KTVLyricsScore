@@ -60,6 +60,7 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .black
+        
 //        let imageView = UIImageView(image: UIImage(named: "bgImage"))
 //        imageView.contentMode = .scaleAspectFill
 //        lrcScoreView.config.backgroundImageView = imageView
@@ -75,6 +76,7 @@ class ViewController: UIViewController {
         lrcScoreView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor).isActive = true
         lrcScoreView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
         lrcScoreView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
+//        lrcScoreView.heightAnchor.constraint(equalToConstant: 60).isActive = true
         
         resetButton.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
         
@@ -107,7 +109,7 @@ class ViewController: UIViewController {
         lrcScoreView.setLrcUrl(url: "https://webdemo.agora.io/ktv/005.xml")
 //        lrcScoreView.setLrcUrl(url: "https://github.com/cleven1/KTVLrcScore/blob/main/005.xml")
 //        lrcScoreView.setLrcUrl(url: "https://webdemo.agora.io/ktv/005.xml")
-//        lrcScoreView.setLrcUrl(url: "https://accktv.sd-rtn.com/202202251412/2b57c52b1e6878d1fd40e68dcd01afasfasf6388/release/lyric/zip_utf8/1/06fc83878ca54245855fdf5c0f9ddb25.zip")
+//        lrcScoreView.setLrcUrl(url: "https://accktv.sd-rtn.com/202204251334/e93e3d1579fc47820ec1beaef1c15e56/release/lyric/zip_utf8/1/0609f0627e114a669008d26e312f7613.zip")
     }
     
     private var audioPlayer: AVAudioPlayer?
