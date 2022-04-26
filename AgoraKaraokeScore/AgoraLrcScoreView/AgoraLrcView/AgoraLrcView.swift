@@ -245,10 +245,8 @@ class AgoraLrcView: UIView {
         progress = 0
         isLineCallback = false
         miguSongModel = nil
-        lrcDatas = nil
+        lrcDatas?.removeAll()
         dataArray?.removeAll()
-        dataArray = nil
-        tableView.reloadData()
         loadView.isHidden = lrcConfig?.isHiddenWatitingView ?? false
     }
 
