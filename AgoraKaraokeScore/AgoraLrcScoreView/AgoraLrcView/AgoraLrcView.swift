@@ -247,6 +247,7 @@ class AgoraLrcView: UIView {
         miguSongModel = nil
         lrcDatas?.removeAll()
         dataArray?.removeAll()
+        tableView.reloadData()
         loadView.isHidden = lrcConfig?.isHiddenWatitingView ?? false
     }
 
