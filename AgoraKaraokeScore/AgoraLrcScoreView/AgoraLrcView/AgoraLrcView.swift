@@ -34,6 +34,7 @@ class AgoraLrcView: UIView {
 
     var miguSongModel: AgoraMiguSongLyric? {
         didSet {
+            guard miguSongModel != nil else { return }
             dataArray = miguSongModel?.sentences
             // 计算总pitch数量
             totalPitchCount = miguSongModel?.sentences
@@ -243,10 +244,12 @@ class AgoraLrcView: UIView {
         prePitch = 0
         preWord = nil
         progress = 0
+        totalPitchCount = 0
         isLineCallback = false
         miguSongModel = nil
         lrcDatas?.removeAll()
         dataArray?.removeAll()
+        tipsLabel.isHidden = true
         tableView.reloadData()
         loadView.isHidden = lrcConfig?.isHiddenWatitingView ?? false
     }

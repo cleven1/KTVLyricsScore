@@ -150,7 +150,13 @@ class ViewController: UIViewController {
     
     @objc
     private func clickScrollButton() {
-        lrcScoreView.scrollToTime(timestamp: 159.4314285713993)
+//        lrcScoreView.scrollToTime(timestamp: 159.4314285713993)
+        lrcScoreView.stop()
+        lrcScoreView.reset()
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+            self.lrcScoreView.setLrcUrl(url: "https://webdemo.agora.io/ktv/005.xml")
+            self.lrcScoreView.start()
+        }
     }
     
     private func setupTimer() {
