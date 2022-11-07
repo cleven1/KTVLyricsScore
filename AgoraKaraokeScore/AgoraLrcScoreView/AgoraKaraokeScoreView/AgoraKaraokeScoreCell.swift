@@ -18,7 +18,7 @@ class AgoraKaraokeScoreCell: UICollectionViewCell {
         view.layer.masksToBounds = true
         return view
     }()
-
+    private let label = UILabel()
     private var startPoi: CGFloat = 0
     private var scoreModel: AgoraScoreItemModel?
     private var scoreConfig: AgoraScoreItemConfigModel?
@@ -37,12 +37,19 @@ class AgoraKaraokeScoreCell: UICollectionViewCell {
         contentView.backgroundColor = .clear
         backgroundColor = .clear
         contentView.addSubview(scoreLineView)
+        contentView.addSubview(label)
+        
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.topAnchor.constraint(equalTo: contentView.topAnchor).isActive = true
+        label.centerXAnchor.constraint(equalTo: contentView.centerXAnchor).isActive = true
+        label.textColor = .white
     }
 
     func setScore(with model: AgoraScoreItemModel?,
                   config: AgoraScoreItemConfigModel)
     {
         guard let model = model else { return }
+        label.text = model.word
         scoreModel = model
         scoreConfig = config
         scoreLineView.isHidden = model.isEmptyCell

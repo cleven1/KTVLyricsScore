@@ -297,9 +297,9 @@ class AgoraLrcView: UIView {
             isLineCallback = roundToPlaces(value: progress, places: 1) >= 1
             if preIndex != scrollRow {
                 currentWordPitchClosure?(lrc.pitch, totalPitchCount)
-
             } else if preWord != lrc.lrcText || prePitch != lrc.pitch {
                 currentWordPitchClosure?(lrc.pitch, totalPitchCount)
+                
             }
             preWord = lrc.lrcText
             prePitch = lrc.pitch

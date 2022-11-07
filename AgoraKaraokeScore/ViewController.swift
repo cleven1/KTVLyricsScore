@@ -41,11 +41,11 @@ class ViewController: UIViewController {
     
     private lazy var scrollButton: UIButton = {
         let button = UIButton()
-        button.setTitle("滚动", for: .normal)
+        button.setTitle("重唱", for: .normal)
         button.setTitleColor(.systemPink, for: .normal)
         button.titleLabel?.font = .systemFont(ofSize: 15)
         button.addTarget(self, action: #selector(clickScrollButton), for: .touchUpInside)
-        button.isHidden = true
+//        button.isHidden = true
         return button
     }()
     private lazy var scoreLabel: UILabel = {
@@ -97,7 +97,7 @@ class ViewController: UIViewController {
         scrollButton.widthAnchor.constraint(equalToConstant: 60).isActive = true
         scrollButton.heightAnchor.constraint(equalToConstant: 40).isActive = true
         
-        setupPlayer()
+        setupPlayer(completion: {})
         createData()
 //        let lrcConfig = lrcScoreView.config?.lrcConfig
 //        lrcConfig?.tipsString = "测试44"
@@ -106,28 +106,30 @@ class ViewController: UIViewController {
     
     private func createData() {
         // 下载歌词
-        lrcScoreView.setLrcUrl(url: "https://webdemo.agora.io/ktv/005.xml")
+        lrcScoreView.setLrcUrl(url: "https://accktvpic.oss-cn-beijing.aliyuncs.com/pic/meta/demo/fulldemoStatic/privacy/005.xml")
 //        lrcScoreView.setLrcUrl(url: "https://github.com/cleven1/KTVLrcScore/blob/main/005.xml")
 //        lrcScoreView.setLrcUrl(url: "https://webdemo.agora.io/ktv/005.xml")
 //        lrcScoreView.setLrcUrl(url: "https://accktv.sd-rtn.com/202204251334/e93e3d1579fc47820ec1beaef1c15e56/release/lyric/zip_utf8/1/0609f0627e114a669008d26e312f7613.zip")
     }
     
     private var audioPlayer: AVAudioPlayer?
-    private func setupPlayer() {
+    private func setupPlayer(completion: @escaping () -> Void) {
 //        let urlString = "https://accktv.sd-rtn.com/202112241044/ecc006b6c22bc65e6822ad00b2a2477f/release/1/da/mp3/17/ChmFDlpzSkmAAk30ACELt8Ha8aA517.mp3"
 //        let urlString = "https://accktv.sd-rtn.com/202112301031/1c6bd64e40b04e7b90879c97799a6b39/release/mp3/1/7ae068/ChmFHFp91NqAO7RdACsP3Jpvwbc325.mp3"
+        let urlString = "http://mfile-sg.intviu.cn/0AA037D4AE9715EB0588EFF4D51E1675/mix_v1.mp3"
         // 下载Mp3
-//        AgoraDownLoadManager.manager.downloadMP3(urlString: urlString) { path in
-//            let url = URL(fileURLWithPath: path ?? "")
-//            self.audioPlayer = try? AVAudioPlayer(contentsOf: url)
-//            self.audioPlayer?.rate = 1.0
-//            self.audioPlayer?.prepareToPlay()
-//        }
-        let path = Bundle.main.path(forResource: "music", ofType: ".mp3")
-        let url = URL(fileURLWithPath: path ?? "")
-        audioPlayer = try? AVAudioPlayer(contentsOf: url)
-        audioPlayer?.rate = 1.0
-        audioPlayer?.prepareToPlay()
+        AgoraDownLoadManager.manager.downloadMP3(urlString: urlString) { path in
+            let url = URL(fileURLWithPath: path ?? "")
+            self.audioPlayer = try? AVAudioPlayer(contentsOf: url)
+            self.audioPlayer?.rate = 1.0
+            self.audioPlayer?.prepareToPlay()
+            completion()
+        }
+//        let path = Bundle.main.path(forResource: "music", ofType: ".mp3")
+//        let url = URL(fileURLWithPath: path ?? "")
+//        audioPlayer = try? AVAudioPlayer(contentsOf: url)
+//        audioPlayer?.rate = 1.0
+//        audioPlayer?.prepareToPlay()
     }
     
     
@@ -153,9 +155,14 @@ class ViewController: UIViewController {
 //        lrcScoreView.scrollToTime(timestamp: 159.4314285713993)
         lrcScoreView.stop()
         lrcScoreView.reset()
+        audioPlayer?.stop()
+        audioPlayer = nil
         DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-            self.lrcScoreView.setLrcUrl(url: "https://webdemo.agora.io/ktv/005.xml")
+            self.lrcScoreView.setLrcUrl(url: "https://accktvpic.oss-cn-beijing.aliyuncs.com/pic/meta/demo/fulldemoStatic/privacy/005.xml")
             self.lrcScoreView.start()
+            self.setupPlayer {
+                self.audioPlayer?.play()
+            }
         }
     }
     
@@ -171,21 +178,21 @@ class ViewController: UIViewController {
 
 extension ViewController: AgoraLrcViewDelegate {
     func getPlayerCurrentTime() -> TimeInterval {
-        //        print("duration == \(audioPlayer?.currentTime ?? 0)")
-        let time = (audioPlayer?.currentTime ?? 0)
+        let time = (audioPlayer?.currentTime ?? 0) * 1000
         return time
     }
     
     func getTotalTime() -> TimeInterval {
-        audioPlayer?.duration ?? 0
+        let time = (audioPlayer?.duration ?? 0) * 1000
+        return time
     }
     
     func seekToTime(time: TimeInterval) {
-        audioPlayer?.currentTime = time
+        audioPlayer?.currentTime = time / 1000
     }
-
+    
     func agoraWordPitch(pitch: Int, totalCount: Int) {
-//        print("pitch === \(pitch)  totalCount == \(totalCount)")
+        lrcScoreView.setVoicePitch([158.0])
     }
 }
 
@@ -195,6 +202,8 @@ extension ViewController: AgoraLrcDownloadDelegate {
     }
     func downloadLrcFinished(url: String) {
 //        print("下载完成 == \(url)")
+        lrcScoreView.start()
+        audioPlayer?.play()
     }
     func downloadLrcProgress(url: String, progress: Double) {
         print("下载进度 == \(progress)")
