@@ -22,13 +22,13 @@ enum AgoraKaraokeScoreStatus: Int {
 
 class AgoraScoreItemModel: NSObject {
     /// position
-    var topKM: CGFloat = 0
+    var top: CGFloat = 0
     /// startTime
-    var leftKM: CGFloat = 0
+    var left: CGFloat = 0
     /// endTime-startTime
-    var widthKM: CGFloat = 0
+    var width: CGFloat = 0
     /// 实时绘制的offset
-    var offsetXKM: CGFloat = 0
+    var offsetX: CGFloat = 0
     /// 当前状态
     var status: AgoraKaraokeScoreStatus = .`init`
 

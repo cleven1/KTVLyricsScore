@@ -216,12 +216,10 @@ class AgoraKaraokeScoreView: UIView {
     private var preModel: AgoraScoreItemModel?
     private func calcuSongScore(pitch: Double) {
         print("pitch: \(pitch), \(currentTime)")
-        /// 减去200ms。因为说话到sdk回调需要这个时间
-        let time = currentTime * 1000 - 200
+        let time = currentTime * 1000 + 170
         guard let model = dataArray?.first(where: { time >= $0.startTime * 1000 && $0.endTime * 1000 >= time }), model.isEmptyCell == false
         else {
             isDrawingCell = false
-//            cursorAnimation(y: _scoreConfig.scoreViewHeight - _scoreConfig.cursorHeight * 0.5, isDraw: false)
             triangleView.updateAlpha(at: 0)
             return
         }
@@ -262,12 +260,10 @@ class AgoraKaraokeScoreView: UIView {
                                  pitch: Double) {
         let contantMax = _scoreConfig.scoreViewHeight - _scoreConfig.cursorHeight * 0.5
         var constant = y - _scoreConfig.cursorHeight * 0.5
-        let durrtion: TimeInterval = 0.16
+        let durrtion: TimeInterval = 0.08
 
         if pitch == 0.0, lastConstant != 0 { /** 为0的情况 快速下降，进行缓降处理 **/
-            print(">>> 下降 前 \(constant) max(\(contantMax))")
             constant = min(lastConstant + 0.12 * contantMax, contantMax)
-            print(">>> 下降 后\(constant)")
             cursorTopCons?.constant = constant
             cursorTopCons?.isActive = true
             if isDraw {
@@ -284,10 +280,6 @@ class AgoraKaraokeScoreView: UIView {
             constant = max(0, constant)
             cursorTopCons?.constant = constant
             cursorTopCons?.isActive = true
-            print(">>> 上升 不变 慢速下降 \(constant)")
-            if constant > lastConstant {
-                print(">>> == lastConstant:\(lastConstant) constant:\(constant)")
-            }
             if isDraw {
                 isDrawingCell = true
             }
@@ -341,24 +333,21 @@ class AgoraKaraokeScoreView: UIView {
             let model = AgoraScoreItemModel()
             let startTime = tone.begin / 1000
             let endTime = tone.end / 1000
-            if i<5 {
-                print("word:\(tone.word), start:\(startTime), end:\(endTime), pitch: \(tone.pitch)")
-            }
             if preEndTime > 0, preEndTime != startTime {
                 let model = insertMiddelLrcData(startTime: startTime,
                                                 endTime: preEndTime)
-                model.leftKM = dataArray.map { $0.widthKM }.reduce(0, +)
+                model.left = dataArray.map { $0.width }.reduce(0, +)
                 dataArray.append(model)
             }
             model.word = tone.word
             model.startTime = roundToPlaces(value: startTime, places: decimalCount)
             model.endTime = roundToPlaces(value: endTime, places: decimalCount)
             model.pitch = Double(tone.pitch)
-            model.widthKM = calcuToWidth(time: endTime - startTime)
-            model.leftKM = dataArray.map { $0.widthKM }.reduce(0, +)
+            model.width = calcuToWidth(time: endTime - startTime)
+            model.left = dataArray.map { $0.width }.reduce(0, +)
             model.pitchMin = pitchMin
             model.pitchMax = pitchMax
-            model.topKM = pitchToY(min: model.pitchMin, max: model.pitchMax, CGFloat(tone.pitch))
+            model.top = pitchToY(min: model.pitchMin, max: model.pitchMax, CGFloat(tone.pitch))
 
             preEndTime = endTime
             dataArray.append(model)
@@ -370,7 +359,7 @@ class AgoraKaraokeScoreView: UIView {
         guard let firstTone = lrcData.first(where: { $0.pitch > 0 }) else { return nil }
         let endTime = roundToPlaces(value: firstTone.begin / 1000 , places: decimalCount)
         let model = AgoraScoreItemModel()
-        model.widthKM = calcuToWidth(time: endTime)
+        model.width = calcuToWidth(time: endTime)
         model.isEmptyCell = true
         model.startTime = 0
         model.endTime = endTime
@@ -385,7 +374,7 @@ class AgoraKaraokeScoreView: UIView {
         let time = startTime - endTime
         model.startTime = startTime
         model.endTime = endTime
-        model.widthKM = calcuToWidth(time: time)
+        model.width = calcuToWidth(time: time)
         model.isEmptyCell = true
         return model
     }
@@ -396,11 +385,11 @@ class AgoraKaraokeScoreView: UIView {
         guard let firstTone = tones.last(where: { $0.pitch > 0 }) else { return nil }
         let endTime = totalTime - roundToPlaces(value: (firstTone.end / 1000), places: decimalCount)
         let model = AgoraScoreItemModel()
-        model.widthKM = calcuToWidth(time: endTime)
+        model.width = calcuToWidth(time: endTime)
         model.isEmptyCell = true
         model.startTime = roundToPlaces(value: firstTone.end / 1000, places: decimalCount)
         model.endTime = model.startTime + endTime
-        model.leftKM = (dataArray?.last?.leftKM ?? 0) + (dataArray?.last?.widthKM ?? 0)
+        model.left = (dataArray?.last?.left ?? 0) + (dataArray?.last?.width ?? 0)
         return model
     }
 
@@ -489,7 +478,7 @@ extension AgoraKaraokeScoreView: UICollectionViewDataSource, UICollectionViewDel
     }
 
     func collectionView(_: UICollectionView, layout _: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        CGSize(width: dataArray?[indexPath.item].widthKM ?? 0,
+        CGSize(width: dataArray?[indexPath.item].width ?? 0,
                height: _scoreConfig.scoreViewHeight)
     }
 
@@ -513,12 +502,12 @@ extension AgoraKaraokeScoreView: UICollectionViewDataSource, UICollectionViewDel
             let model = dataArray[i]
             let indexPath = IndexPath(item: i, section: 0)
             let cell = collectionView.cellForItem(at: indexPath) as? AgoraKaraokeScoreCell
-            if model.leftKM < moveX, moveX < model.leftKM + model.widthKM {
-                model.offsetXKM = moveX
+            if model.left < moveX, moveX < model.left + model.width {
+                model.offsetX = moveX
                 model.status = status
-            } else if model.leftKM + model.widthKM <= moveX {
+            } else if model.left + model.width <= moveX {
                 model.status = .end
-            } else if moveX <= model.leftKM {
+            } else if moveX <= model.left {
                 model.status = .`init`
             }
             cell?.setScore(with: model, config: _scoreConfig)
